@@ -73,9 +73,9 @@ $ python audio_degrader.py test.wav gain,-15 ambience-pub,6 dr-compression,3 mp3
 ### Dependencies
 
 * [`librosa`][2] for audio processing in python. Just install it with `pip install librosa`
-* ['sox'][3] for audio processing via command line. Just install it with `apt-get install sox` in Linux or `brew install sox` in OSX.
-* ['rubberband'][4] for time stretchign and pitch shifting. Install it with `apt-get install rubberband-cli` or `brew install rubberband`.
-* ['ffmpeg'][5] for transcoding. Install it `apt-get install ffmpeg` in Linux or `brew install ffmpeg` in OSX.
+* [`sox`][3] for audio processing via command line. Just install it with `apt-get install sox` in Linux or `brew install sox` in OSX.
+* [`rubberband`][4] for time stretchign and pitch shifting. Install it with `apt-get install rubberband-cli` or `brew install rubberband`.
+* [`ffmpeg`][5] for transcoding. Install it `apt-get install ffmpeg` in Linux or `brew install ffmpeg` in OSX.
 [1]: https://code.soundsoftware.ac.uk/projects/audio-degradation-toolbox
 [2]: https://github.com/librosa/librosa
 [3]: http://sox.sourceforge.net/sox.html
