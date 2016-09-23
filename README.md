@@ -8,6 +8,9 @@ Applications:
 
 It is similar to the [Audio Degradation Toolbox in Matlab by Sebastian Ewert and Matthias Mauch][1], but simpler, and in python. I'm using it for creating my own synthetic datasets.
 
+### Temporary limitation:
+For the moment, it only works with .WAV files with codec `pcm_s16le` (16 bits .WAV) and sample rate of 8KHz. I don't need more for myself, but I will try to extended for any sample rate in the short-term.
+
 ## Degradations available
 * mp3 compression
 * gain
