@@ -38,7 +38,7 @@ def add_noise(x, noise_name, snr):
     noise_path = './sounds/%s.wav' % noise_name
     z, sr = lr.core.load(noise_path, sr=8000, mono=True)
     while z.shape[0] < x.shape[0]:
-        z = np.concatenate((z, z), axis=1)
+        z = np.concatenate((z, z), axis=0)
     z = z[0: x.shape[0]]
     rms_z = np.sqrt(np.mean(np.power(z, 2)))
     logging.debug("rms_z: %f" % rms_z)
@@ -176,7 +176,7 @@ def align_y_with_x(x, y):
     return y
 
 
-def apply_mp3(x, degree, align=True):
+def apply_mp3(x, degree, align=False):
     logging.info("MP3 compression. Degree %d" % degree)
     tmp_file_0 = tmp_path('.wav')
     tmp_file_1 = tmp_path('.wav')
