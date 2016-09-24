@@ -516,7 +516,6 @@ if __name__ == "__main__":
                         dest='testing',
                         help='Output audio wav')
 
-
     args = vars(parser.parse_args())
     main(args['input_wav'],
          args['degradation'],
