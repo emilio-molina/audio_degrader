@@ -140,14 +140,57 @@ def test_lame():
     lame(TEST_WAV, TEST_WAV.replace('.wav', '_5.mp3'), 5)
 
 
-def apply_mp3(x, degree):
-    logging.info("MP3 compression. Degree %d" % degree)
-    tmp_file_1 = tmp_path()
-    tmp_file_2 = tmp_path()
-    lr.output.write_wav(tmp_file_1, x, 8000, norm=False)
-    lame(tmp_file_1, tmp_file_2, degree)
-    y, sr = lr.core.load(tmp_file_2, sr=8000, mono=True)
+def cross_correlation_using_fft(x, y):
+    f1 = np.fft.fft(x)
+    f2 = np.fft.fft(np.flipud(y))
+    cc = np.real(np.fft.ifft(f1 * f2))
+    return np.fft.fftshift(cc)
+
+
+def compute_shift(x, y):
+    assert len(x) == len(y)
+    c = cross_correlation_using_fft(x, y)
+    assert len(c) == len(x)
+    zero_index = int(len(x) / 2) - 1
+    shift = zero_index - np.argmax(c)
+    return shift
+
+
+def align_y_with_x(x, y):
+    min_size = min(len(x), len(y))
+    x = x[:min_size]
+    y = y[:min_size]
+    logging.debug("Aligning")
+    xrms = np.abs(lr.feature.rmse(x, n_fft=512, hop_length=4).flatten())
+    xrms = xrms - np.mean(xrms)
+    xrms = xrms / np.std(xrms)
+    yrms = np.abs(lr.feature.rmse(y, n_fft=512, hop_length=4).flatten())
+    yrms = yrms - np.mean(yrms)
+    yrms = yrms / np.std(yrms)
+    time_shift = compute_shift(xrms, yrms) * 4
+    logging.debug("time_shift: %d samples" % time_shift)
+    if time_shift < 0:
+        y = np.concatenate((np.zeros(-time_shift), y))
+    else:
+        y = y[time_shift:]
     return y
+
+
+def apply_mp3(x, degree, align=True):
+    logging.info("MP3 compression. Degree %d" % degree)
+    tmp_file_0 = tmp_path('.wav')
+    tmp_file_1 = tmp_path('.wav')
+    tmp_file_2 = tmp_path('.mp3')
+    tmp_file_3 = tmp_path('.wav')
+    lr.output.write_wav(tmp_file_0, x, 8000, norm=False)
+    ffmpeg(tmp_file_0, tmp_file_1)
+    lame(tmp_file_1, tmp_file_2, degree)
+    ffmpeg(tmp_file_2, tmp_file_3)
+    y, sr = lr.core.load(tmp_file_3, sr=8000, mono=True)
+    if not align:
+        return y
+    else:
+        return align_y_with_x(x, y)
 
 
 def apply_gain(x, gain):
