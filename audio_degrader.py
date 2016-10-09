@@ -22,7 +22,10 @@ SOUNDS = ['white-noise',
           'ambience-pub',
           'vinyl',
           'hum',
-          'applause']
+          'applause',
+          'debate1',
+          'debate2',
+          'helen']
 
 RUBBERBAND_PROCESSINGS = ['time-stretching', 'pitch-shifting']
 
@@ -452,7 +455,10 @@ if __name__ == "__main__":
         ambience-pub,snr: Add pub ambience. SNR in dB.
         vinyl,snr: Add vinyl noise. SNR in dB.
         hum,snr: Add hum noise. SNR in dB.
-        applause,snd: Add applause noise. SNR in dB.
+        applause,snr: Add applause noise. SNR in dB.
+        debate1,snd: Add speech sound. SNR in dB.
+        debate2,snd: Add speech sound. SNR in dB.
+        helen,snd: Add speech sound. SNR in dB.
         smartphone_mic,level: Smartphone_mic-like sonority. Level 0.0-1.0
         classroom,level: Classroom-like reverb. Level 0.0-1.0
         dr-compression,degree: Dynamic range compression. Degree in (1-3).
