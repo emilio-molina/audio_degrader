@@ -166,6 +166,10 @@ def apply_gain(x, gain):
     return x
 
 
+def trim_beginning(x, nsamples):
+    return x[nsamples:]
+
+
 def test_apply_gain():
     print "Testing apply_gain()"
     # Test file reading
@@ -328,6 +332,8 @@ def degradation_value(string):
     """ True if it is a degradation,value string
     """
     m = None
+    if string.split(',')[0] == 'start':
+        m = re.match('start,[0-9]*\.?[0-9]+$', string)
     if string.split(',')[0] == 'mp3':
         m = re.match('mp3(,[1-5])?$', string)
     if string.split(',')[0] == 'eq':
@@ -438,6 +444,8 @@ def main(input_wav, degradations_list, output_wav, testing=False):
             x = apply_dr_compression(x, degree=float(value))
         if degradation_name == 'eq':
             x = apply_eq(x, value)
+        if degradation_name == 'start':
+            x = x[min(len(x), np.round(sr * float(value))):]
     tmp_file = tmp_path()
     lr.output.write_wav(tmp_file, x, 8000, norm=False)
     ffmpeg(tmp_file, output_wav)
@@ -447,6 +455,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="""Process audio with a sequence of degradations
     Accepted degradadations:
+        start,time: Remove audio until start. Value in seconds.
         mp3,quality: Mp3 compression. Value is quality (1-5)
         gain,db: Gain. Value is dB (e.g. gain,-20.3).
         normalize,percentage: Normalize. Percentage in 0.0-1.0 (1.0=full range)
