@@ -25,7 +25,17 @@ SOUNDS = ['white-noise',
           'applause',
           'debate1',
           'debate2',
-          'helen']
+          'helen',
+          'birds',
+          'cafe1',
+          'cafe2',
+          'children',
+          'city-ambience',
+          'picadilly',
+          'rain1',
+          'rain2',
+          'rain3',
+          'traffic']
 
 RUBBERBAND_PROCESSINGS = ['time-stretching', 'pitch-shifting']
 
@@ -38,7 +48,7 @@ def add_noise(x, noise_name, snr):
         noise_name (str): Name of noise
         snr (float): SNR of output sound
     """
-    noise_path = './sounds/%s.wav' % noise_name
+    noise_path = '/home/emolina/git/audio_degrader/sounds/%s.wav' % noise_name
     z, sr = lr.core.load(noise_path, sr=8000, mono=True)
     while z.shape[0] < x.shape[0]:
         z = np.concatenate((z, z), axis=0)
@@ -74,7 +84,7 @@ def convolve(x, ir_name, level=1.0):
     """
     logging.info('Convolving with %s and level %f' % (ir_name, level))
     x = np.copy(x)
-    ir_path = './sounds/ir_{0}.wav'.format(ir_name)
+    ir_path = '/home/emolina/git/audio_degrader/sounds/ir_{0}.wav'.format(ir_name)
     ir, sr = lr.core.load(ir_path, sr=8000, mono=True)
     return np.convolve(x, ir, 'full')[0:x.shape[0]] * level + x * (1 - level)
 
@@ -162,7 +172,8 @@ def apply_gain(x, gain):
     """
     logging.info("Apply gain %f dB" % gain)
     x = np.copy(x)
-    x *= np.minimum(np.maximum(-1.0, 10 ** (gain / 20.0)), 1.0)
+    x = x * (10 ** (gain / 20.0))
+    x = np.minimum(np.maximum(-1.0, x), 1.0)
     return x
 
 
@@ -297,7 +308,7 @@ def apply_dr_compression(x, degree):
     lr.output.write_wav(tmpfile_1,
                         x, 8000, norm=False)
     if degree == 1:
-        cmd = "sox {0} {1} compand 0.1,0.20 -40,-10,-30 5"
+        cmd = "sox {0} {1} compand 0.01,0.20 -40,-10,-30 5"
     elif degree == 2:
         cmd = "sox {0} {1} compand 0.01,0.20 -50,-50,-40,-30,-40,-10,-30 12"
     elif degree == 3:
@@ -459,15 +470,7 @@ if __name__ == "__main__":
         mp3,quality: Mp3 compression. Value is quality (1-5)
         gain,db: Gain. Value is dB (e.g. gain,-20.3).
         normalize,percentage: Normalize. Percentage in 0.0-1.0 (1.0=full range)
-        white-noise,snr: Add white noise. SNR in dB.
-        brown-noise,snr: Add brown noise. SNR in dB.
-        ambience-pub,snr: Add pub ambience. SNR in dB.
-        vinyl,snr: Add vinyl noise. SNR in dB.
-        hum,snr: Add hum noise. SNR in dB.
-        applause,snr: Add applause noise. SNR in dB.
-        debate1,snd: Add speech sound. SNR in dB.
-        debate2,snd: Add speech sound. SNR in dB.
-        helen,snd: Add speech sound. SNR in dB.
+        noise_name,snr: Add noise (check sounds folder)
         smartphone_mic,level: Smartphone_mic-like sonority. Level 0.0-1.0
         classroom,level: Classroom-like reverb. Level 0.0-1.0
         dr-compression,degree: Dynamic range compression. Degree in (1-3).
