@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 import warnings
 warnings.filterwarnings("ignore")  # noqa
 import argparse
@@ -14,6 +15,11 @@ logging.basicConfig(level=logging.DEBUG)
 TEST_WAV = './test_files/test.wav'
 
 RUBBERBAND_PROCESSINGS = ['time-stretching', 'pitch-shifting']
+
+
+def remove_tmp_files(tmp_files):
+    for tmp_file in tmp_files:
+        os.remove(tmp_file)
 
 
 def mix_with_sound(x, sr, sound_path, snr):
@@ -138,6 +144,7 @@ def apply_mp3(x, sr, degree):
     lame(tmp_file_1, tmp_file_2, degree)
     ffmpeg(tmp_file_2, tmp_file_3)
     y, sr = lr.core.load(tmp_file_3, sr=sr, mono=True)
+    remove_tmp_files([tmp_file_0, tmp_file_1, tmp_file_2, tmp_file_3])
     return y
 
 
@@ -186,20 +193,21 @@ def apply_rubberband(x, sr, time_stretching_ratio=1.0, pitch_shifting_ratio=1.0)
     logging.info("Applying rubberband. ts_ratio={0}, ps_ratio={1}".format(
         time_stretching_ratio,
         pitch_shifting_ratio))
+    tmp_file_0 = tmp_path()
     tmp_file_1 = tmp_path()
-    tmp_file_2 = tmp_path()
-    lr.output.write_wav(tmp_file_1, x, sr=sr, norm=False)
+    lr.output.write_wav(tmp_file_0, x, sr=sr, norm=False)
     cmd = "rubberband -c 1 -t {0} -f {1} {2} {3}".format(
         time_stretching_ratio,
         pitch_shifting_ratio,
-        tmp_file_1,
-        tmp_file_2)
+        tmp_file_0,
+        tmp_file_1)
     p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
     out, err = p.communicate()
     if p.returncode != 0:
         print "ERROR!"
-    y, sr = lr.core.load(tmp_file_2, sr=sr, mono=True)
+    y, sr = lr.core.load(tmp_file_1, sr=sr, mono=True)
+    remove_tmp_files([tmp_file_0, tmp_file_1])
     return y
 
 
@@ -214,9 +222,9 @@ def test_apply_rubberband():
 
     
 def apply_dr_compression(x, sr, degree):
-    tmpfile_1 = tmp_path('.wav')
-    tmpfile_2 = tmp_path('.wav')
-    lr.output.write_wav(tmpfile_1,
+    tmp_file_0 = tmp_path('.wav')
+    tmp_file_1 = tmp_path('.wav')
+    lr.output.write_wav(tmp_file_0,
                         x, sr=sr, norm=False)
     if degree == 1:
         cmd = "sox {0} {1} compand 0.01,0.20 -40,-10,-30 5"
@@ -224,14 +232,15 @@ def apply_dr_compression(x, sr, degree):
         cmd = "sox {0} {1} compand 0.01,0.20 -50,-50,-40,-30,-40,-10,-30 12"
     elif degree == 3:
         cmd = "sox {0} {1} compand 0.01,0.1 -70,-60,-70,-30,-70,0,-70 45"
-    cmd = cmd.format(tmpfile_1, tmpfile_2)
+    cmd = cmd.format(tmp_file_0, tmp_file_1)
     logging.info(cmd)
     p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
     out, err = p.communicate()
     if p.returncode != 0:
         print "ERROR!"
-    y, sr = lr.core.load(tmpfile_2, sr=sr, mono=True)
+    y, sr = lr.core.load(tmp_file_1, sr=sr, mono=True)
+    remove_tmp_files([tmp_file_0, tmp_file_1])
     return y
 
 
@@ -244,22 +253,23 @@ def test_apply_dr_compression():
     x, sr = lr.core.load(TEST_WAV, mono=True)
     for degree in [1, 2, 3]:
         y = apply_dr_compression(x, sr, degree)
-        tmpfile = tmp_path()
-        lr.output.write_wav(tmpfile,
+        tmp_file = tmp_path()
+        lr.output.write_wav(tmp_file,
                             y, sr=sr, norm=False)
-        ffmpeg(tmpfile, TEST_WAV.replace('.wav', '_dr_%d.wav' % degree))
+        ffmpeg(tmp_file, TEST_WAV.replace('.wav', '_dr_%d.wav' % degree))
+        remove_tmp_files([tmp_file])
 
 
 def apply_eq(x, sr, value):
     freq, bw, gain = map(int, value.split('//'))
     logging.info("Equalizing. f=%f, bw=%f, gain=%f" % (freq, bw, gain))
-    tmpfile_1 = tmp_path('.wav')
-    tmpfile_2 = tmp_path('.wav')
-    lr.output.write_wav(tmpfile_1,
+    tmp_file_0 = tmp_path('.wav')
+    tmp_file_1 = tmp_path('.wav')
+    lr.output.write_wav(tmp_file_0,
                         x, sr=sr, norm=False)
     cmd = "sox {0} {1} equalizer {2} {3} {4}".format(
-        tmpfile_1,
-        tmpfile_2,
+        tmp_file_0,
+        tmp_file_1,
         freq,
         bw,
         gain)
@@ -269,17 +279,19 @@ def apply_eq(x, sr, value):
     out, err = p.communicate()
     if p.returncode != 0:
         print "ERROR!"
-    y, sr = lr.core.load(tmpfile_2, sr=sr, mono=True)
+    y, sr = lr.core.load(tmp_file_1, sr=sr, mono=True)
+    remove_tmp_files([tmp_file_0, tmp_file_1])
     return y
 
 
 def test_apply_eq():
     x, sr = lr.core.load(TEST_WAV, mono=True)
     y = apply_eq(x, sr, '500//50//30')
-    tmpfile = tmp_path()
-    lr.output.write_wav(tmpfile,
+    tmp_file = tmp_path()
+    lr.output.write_wav(tmp_file,
                         y, sr=sr, norm=False)
-    ffmpeg(tmpfile, TEST_WAV.replace('.wav', '_eq.wav'))
+    ffmpeg(tmp_file, TEST_WAV.replace('.wav', '_eq.wav'))
+    remove_tmp_files([tmp_file])
 
 
 def test_all():
@@ -336,6 +348,7 @@ def main(input_wav, degradations_list, output_wav, testing=False):
     tmp_file = tmp_path()
     lr.output.write_wav(tmp_file, x, sr=sr, norm=False)
     ffmpeg(tmp_file, output_wav)
+    remove_tmp_files([tmp_file])
 
 
 if __name__ == "__main__":
@@ -368,7 +381,7 @@ if __name__ == "__main__":
                         help='Output audio wav')
     parser.add_argument('--testing', action='store_true',
                         dest='testing',
-                        help='Output audio wav')
+                        help='Test all functionalities')
 
     args = vars(parser.parse_args())
     main(args['input_wav'],
