@@ -3,6 +3,7 @@ import librosa as lr
 import numpy as np
 from audio_degrader import mix_with_sound, convolve, ffmpeg, lame, apply_gain
 from audio_degrader import apply_eq, tmp_path, remove_tmp_files
+from audio_degrader import apply_dr_compression
 
 TEST_STEREO_WAV_PATH = './tests/test_files/test30s_44100_stereo_pcm16le.wav'
 TEST_MONO_WAV_PATH = './tests/test_files/test30s_44100_mono_pcm16le.wav'
@@ -80,6 +81,16 @@ class TestMono:
                             y, sr=sr, norm=False)
         ffmpeg(tmp_file, TEST_MONO_WAV_PATH + '.eq.wav')
         remove_tmp_files([tmp_file])
+
+    def test_apply_dr_compression(self):
+        x, sr = lr.core.load(TEST_MONO_WAV_PATH, mono=True)
+        for degree in [1, 2, 3]:
+            y = apply_dr_compression(x, sr, degree)
+            tmp_file = tmp_path()
+            lr.output.write_wav(tmp_file,
+                                y, sr=sr, norm=False)
+            ffmpeg(tmp_file, TEST_MONO_WAV_PATH + '.dr_%d.wav' % degree)
+            remove_tmp_files([tmp_file])
 
     def teardown_class(self):
         cmd = "rm {0}.*".format(TEST_MONO_WAV_PATH)

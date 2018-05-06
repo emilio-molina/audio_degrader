@@ -59,11 +59,6 @@ def tmp_path(ext=''):
     return tf.name + ext
 
 
-def test_tmp_path():
-    print tmp_path()
-    print tmp_path()
-
-
 def ffmpeg(in_wav, out_wav):
     cmd = ("ffmpeg -y -i {0} -ac 1 " +
            "-acodec pcm_s16le -async 1 {1}").format(
@@ -149,17 +144,6 @@ def apply_dr_compression(x, sr, degree):
 def normalize(x, percentage=1.0):
     max_peak = np.max(np.abs(x))
     return x / max_peak * percentage
-
-
-def test_apply_dr_compression():
-    x, sr = lr.core.load(TEST_WAV, mono=True)
-    for degree in [1, 2, 3]:
-        y = apply_dr_compression(x, sr, degree)
-        tmp_file = tmp_path()
-        lr.output.write_wav(tmp_file,
-                            y, sr=sr, norm=False)
-        ffmpeg(tmp_file, TEST_WAV.replace('.wav', '_dr_%d.wav' % degree))
-        remove_tmp_files([tmp_file])
 
 
 def apply_eq(x, sr, value):
