@@ -25,32 +25,34 @@ if __name__ == "__main__":
         formatter_class=argparse.RawTextHelpFormatter,
         epilog="Note: all audios are transcoded to mono, pcm_s16le")
 
-    parser.add_argument('--in-wav', metavar='input_wav',
+    parser.add_argument('--in-wav',
                         type=str,
                         help='Input audio wav')
     parser.add_argument('--degradations', metavar='degradation,value',
                         type=str,
                         nargs='*',
                         help='List of sequential degradations')
-    parser.add_argument('--out-wav', metavar='output_wav',
+    parser.add_argument('--out-wav',
                         type=str,
                         help='Output audio wav')
     parser.add_argument('--list-resources', action='store_true',
                         dest='list_resources',
                         help='List all available resources')
     args = vars(parser.parse_args())
+    try:
+        if args['list_resources']:
+            print "Available resources"
+            print "(see 'mix' and 'impulse-response' degradations):"
+            for root, dirs, fnames in os.walk(
+                    os.path.join(audio_degrader.__path__[0], 'resources')):
+                for fname in fnames:
+                    if os.path.splitext(fname)[1] == '.wav':
+                        print "  " + os.path.join(root, fname)
 
-    if args['list_resources']:
-        print "Available resources"
-        print "(to be used with 'mix' and 'impulse-response' degradations):"
-        for root, dirs, fnames in os.walk(
-                os.path.join(audio_degrader.__path__[0], 'resources')):
-            for fname in fnames:
-                if os.path.splitext(fname)[1] == '.wav':
-                    print "  " + os.path.join(root, fname)
+            exit(0)
 
-        exit(0)
-
-    audio_degrader.main(args['input_wav'],
-                        args['degradations'],
-                        args['output_wav'])
+        audio_degrader.main(args['in_wav'],
+                            args['degradations'],
+                            args['out_wav'])
+    except Exception:
+        parser.print_help()
