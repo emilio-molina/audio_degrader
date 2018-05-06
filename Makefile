@@ -1,4 +1,6 @@
 test:
+	flake8 audio_degrader
+	flake8 tests
 	python -m pytest tests -vv
 
 package:

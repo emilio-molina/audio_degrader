@@ -209,4 +209,3 @@ def main(input_wav, degradations_list, output_wav):
     lr.output.write_wav(tmp_file, x, sr=sr, norm=False)
     ffmpeg(tmp_file, output_wav)
     remove_tmp_files([tmp_file])
-
