@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-from audio_degrader import main
+import os
 import argparse
+import audio_degrader
 
 
 if __name__ == "__main__":
@@ -11,9 +12,11 @@ if __name__ == "__main__":
         mp3,quality: Mp3 compression. Value is quality (1-5)
         gain,db: Gain. Value is dB (e.g. gain,-20.3).
         normalize,percentage: Normalize. Percentage in 0.0-1.0 (1.0=full range)
-        mix,"sound_path"//snr: Mix with sound at a specified SNR
+        mix,"sound_path"//snr: Mix with sound at a specified SNR.
+                               See --list-resources to check installed sounds.
         impulse-response,"impulse_response_path"//level: Apply impulse response
                                                          Level 0.0-1.0
+                                See --list-resources to check installed sounds.
         dr-compression,degree: Dynamic range compression. Degree 1,2 or 3.
         time-stretching,ratio: Apply time streting.
         pitch-shifting,cents: Apply pitch shifting.
@@ -22,18 +25,32 @@ if __name__ == "__main__":
         formatter_class=argparse.RawTextHelpFormatter,
         epilog="Note: all audios are transcoded to mono, pcm_s16le")
 
-    parser.add_argument('input_wav', metavar='input_wav',
+    parser.add_argument('--in-wav', metavar='input_wav',
                         type=str,
                         help='Input audio wav')
-    parser.add_argument('degradation', metavar='degradation,value',
+    parser.add_argument('--degradations', metavar='degradation,value',
                         type=str,
                         nargs='*',
                         help='List of sequential degradations')
-    parser.add_argument('output_wav', metavar='output_wav',
+    parser.add_argument('--out-wav', metavar='output_wav',
                         type=str,
                         help='Output audio wav')
-
+    parser.add_argument('--list-resources', action='store_true',
+                        dest='list_resources',
+                        help='List all available resources')
     args = vars(parser.parse_args())
-    main(args['input_wav'],
-         args['degradation'],
-         args['output_wav'])
+
+    if args['list_resources']:
+        print "Available resources"
+        print "(to be used with 'mix' and 'impulse-response' degradations):"
+        for root, dirs, fnames in os.walk(
+                os.path.join(audio_degrader.__path__[0], 'resources')):
+            for fname in fnames:
+                if os.path.splitext(fname)[1] == '.wav':
+                    print "  " + os.path.join(root, fname)
+
+        exit(0)
+
+    audio_degrader.main(args['input_wav'],
+                        args['degradations'],
+                        args['output_wav'])
