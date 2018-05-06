@@ -20,22 +20,25 @@ class TestMono:
 
     def test_mix_with_sound_mono(self):
         x, sr = lr.core.load(TEST_MONO_WAV_PATH, sr=None, mono=False)
-        y = mix_with_sound(x, sr, './sounds/white-noise.wav', -6)
+        y = mix_with_sound(x, sr, './resources/sounds/white-noise.wav', -6)
         lr.output.write_wav(
             TEST_MONO_WAV_PATH + '.wnoise-6.wav',
             y, sr=sr, norm=False)
-        y = mix_with_sound(x, sr, './sounds/white-noise.wav', 20)
+        y = mix_with_sound(x, sr, './resources/sounds/white-noise.wav', 20)
         lr.output.write_wav(
             TEST_MONO_WAV_PATH + '.wnoise20.wav',
             y, sr=sr, norm=False)
 
     def test_convolve_mono(self):
         x, sr = lr.core.load(TEST_MONO_WAV_PATH, mono=True)
-        y = convolve(x, sr, './impulse_responses/ir_classroom.wav', 0.6)
+        y = convolve(x, sr,
+                     './resources/impulse_responses/ir_classroom.wav',
+                     0.6)
         lr.output.write_wav(
             TEST_MONO_WAV_PATH + '.ir_classroom.wav',
             y, sr=sr, norm=False)
-        y = convolve(x, sr, './impulse_responses/ir_smartphone_mic.wav')
+        y = convolve(x, sr,
+                     './resources/impulse_responses/ir_smartphone_mic.wav')
         lr.output.write_wav(
             TEST_MONO_WAV_PATH + '.ir_smartphone_mic.wav',
             y, sr=sr, norm=False)
