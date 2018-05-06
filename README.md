@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/EliosMolina/audio_degrader.svg?branch=master)](https://travis-ci.org/EliosMolina/audio_degrader)
 # audio_degrader.py
 
 This tool allows to introduce controlled degradations to audio.
