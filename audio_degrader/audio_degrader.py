@@ -2,7 +2,6 @@
 import os
 import warnings
 warnings.filterwarnings("ignore")  # noqa
-import argparse
 import librosa as lr
 import numpy as np
 import subprocess
@@ -210,39 +209,3 @@ def main(input_wav, degradations_list, output_wav):
     lr.output.write_wav(tmp_file, x, sr=sr, norm=False)
     ffmpeg(tmp_file, output_wav)
     remove_tmp_files([tmp_file])
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="""Process audio with a sequence of degradations
-    Accepted degradadations:
-        start,time: Remove audio until start. Value in seconds.
-        mp3,quality: Mp3 compression. Value is quality (1-5)
-        gain,db: Gain. Value is dB (e.g. gain,-20.3).
-        normalize,percentage: Normalize. Percentage in 0.0-1.0 (1.0=full range)
-        mix,"sound_path"//snr: Mix with sound at a specified SNR
-        impulse-response,"impulse_response_path"//level: Apply impulse response
-                                                         Level 0.0-1.0
-        dr-compression,degree: Dynamic range compression. Degree 1,2 or 3.
-        time-stretching,ratio: Apply time streting.
-        pitch-shifting,cents: Apply pitch shifting.
-        eq,freq_hz//bw_hz//gain_db: Apply equalization with sox.
-        """,
-        formatter_class=argparse.RawTextHelpFormatter,
-        epilog="Note: all audios are transcoded to mono, pcm_s16le")
-
-    parser.add_argument('input_wav', metavar='input_wav',
-                        type=str,
-                        help='Input audio wav')
-    parser.add_argument('degradation', metavar='degradation,value',
-                        type=str,
-                        nargs='*',
-                        help='List of sequential degradations')
-    parser.add_argument('output_wav', metavar='output_wav',
-                        type=str,
-                        help='Output audio wav')
-
-    args = vars(parser.parse_args())
-    main(args['input_wav'],
-         args['degradation'],
-         args['output_wav'])

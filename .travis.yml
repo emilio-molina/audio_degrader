@@ -5,14 +5,12 @@ python:
 virtualenv:
   system_site_packages: false
 cache: pip
-before_install:
-    - pip install flake8
-script:
-    - flake8 audio_degrader.py
-    - flake8 tests
 install:
+  - pip install flake8
   - pip install -r requirements.txt
   - sudo apt-get update
   - sudo apt-get install sox ffmpeg
 script:
+  - flake8 audio_degrader
+  - flake8 tests
   - python -m pytest tests/test_*.py -vv
