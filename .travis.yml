@@ -8,7 +8,7 @@ cache: pip
 before_install:
     - pip install flake8
 script:
-    - flake8 audio_degrader.py
+    - flake8 audio_degrader
     - flake8 tests
 install:
   - pip install -r requirements.txt
