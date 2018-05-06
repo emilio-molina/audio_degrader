@@ -1,0 +1,18 @@
+language: python
+dist: xenial
+python:
+  - "2.7"
+virtualenv:
+  system_site_packages: false
+cache: pip
+before_install:
+    - pip install flake8
+script:
+    - flake8 audio_degrader.py
+    - flake8 tests
+install:
+  - pip install -r requirements.txt
+  - sudo apt-get update
+  - sudo apt-get install sox ffmpeg
+script:
+  - python -m pytest tests/test_*.py -vv
