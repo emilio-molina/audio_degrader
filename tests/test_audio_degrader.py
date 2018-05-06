@@ -2,7 +2,7 @@ import os
 import librosa as lr
 import numpy as np
 from audio_degrader import mix_with_sound, convolve, ffmpeg, lame, apply_gain
-from audio_degrader import apply_rubberband
+from audio_degrader import apply_eq, tmp_path, remove_tmp_files
 
 TEST_STEREO_WAV_PATH = './tests/test_files/test30s_44100_stereo_pcm16le.wav'
 TEST_MONO_WAV_PATH = './tests/test_files/test30s_44100_mono_pcm16le.wav'
@@ -62,24 +62,24 @@ class TestMono:
         gain_test_wav = TEST_MONO_WAV_PATH + '.gain+6.wav'
         lr.output.write_wav(gain_test_wav, y, 8000, norm=False)
 
-    def test_apply_rubberband(self):
+    def test_timestretching_pitchshifting(self):
         x, sr = lr.core.load(TEST_MONO_WAV_PATH, mono=True)
-        t_x = apply_rubberband(x, sr, time_stretching_ratio=0.5)
-        p_x = apply_rubberband(x, sr, pitch_shifting_ratio=1.2)
+        t_x = lr.effects.time_stretch(x, rate=0.5)
+        p_x = lr.effects.pitch_shift(x, sr, n_steps=100,
+                                     bins_per_octave=1200)
         lr.output.write_wav(TEST_MONO_WAV_PATH + '.timestr.wav',
                             t_x, sr=sr, norm=False)
         lr.output.write_wav(TEST_MONO_WAV_PATH + '.pitchshift.wav',
                             p_x, sr=sr, norm=False)
 
-    def test_timestretching_pitchshifting(self):
+    def test_apply_eq(self):
         x, sr = lr.core.load(TEST_MONO_WAV_PATH, mono=True)
-        t_x = lr.effects.time_stretch(x, rate=0.5)
-        p_x = lr.effects.pitch_shift(x, sr, n_steps=3,
-                                     bins_per_octave=24)
-        lr.output.write_wav(TEST_MONO_WAV_PATH + '.timestr.wav',
-                            t_x, sr=sr, norm=False)
-        lr.output.write_wav(TEST_MONO_WAV_PATH + '.pitchshift.wav',
-                            p_x, sr=sr, norm=False)
+        y = apply_eq(x, sr, '500//50//30')
+        tmp_file = tmp_path()
+        lr.output.write_wav(tmp_file,
+                            y, sr=sr, norm=False)
+        ffmpeg(tmp_file, TEST_MONO_WAV_PATH + '.eq.wav')
+        remove_tmp_files([tmp_file])
 
     def teardown_class(self):
         cmd = "rm {0}.*".format(TEST_MONO_WAV_PATH)
