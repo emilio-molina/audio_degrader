@@ -26,7 +26,14 @@ def mix_with_sound(x, sr, sound_path, snr):
         sound_path (str): Name of sound
         snr (float): Signal-to-noise ratio
     """
+    if not os.path.isfile(sound_path):
+        resource_sound_path = os.path.join(os.path.dirname(__file__),
+                                           'resources',
+                                           sound_path)
+        if os.path.isfile(resource_sound_path):
+            sound_path = resource_sound_path
     z, sr = lr.core.load(sound_path, sr=sr, mono=True)
+    logging.debug("Mixing with sound {0}".format(sound_path))
     while z.shape[0] < x.shape[0]:  # loop in case noise is shorter than
         z = np.concatenate((z, z), axis=0)
     z = z[0: x.shape[0]]
@@ -47,6 +54,12 @@ def mix_with_sound(x, sr, sound_path, snr):
 def convolve(x, sr, ir_path, level=1.0):
     """ Apply convolution to x using impulse response given
     """
+    if not os.path.isfile(ir_path):
+        resource_ir_path = os.path.join(os.path.dirname(__file__),
+                                        'resources',
+                                        ir_path)
+        if os.path.isfile(resource_ir_path):
+            ir_path = resource_ir_path
     logging.info('Convolving with %s and level %f' % (ir_path, level))
     x = np.copy(x)
     ir, sr = lr.core.load(ir_path, sr=sr, mono=True)
