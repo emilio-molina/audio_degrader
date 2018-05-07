@@ -1,7 +1,5 @@
 #!/usr/bin/python
 import os
-import warnings
-warnings.filterwarnings("ignore")  # noqa
 import librosa as lr
 import numpy as np
 import subprocess
@@ -10,10 +8,15 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-TEST_WAV = './test_files/test.wav'
-
 
 def remove_tmp_files(tmp_files):
+    """ Remove list of files
+
+    Typically used for temporal files
+
+    Args:
+        tmp_files (list): List of files to be removed
+    """
     for tmp_file in tmp_files:
         os.remove(tmp_file)
 
@@ -23,8 +26,12 @@ def mix_with_sound(x, sr, sound_path, snr):
 
     Args:
         x (numpy array): Input signal
-        sound_path (str): Name of sound
+        sound_path (str): Path of mixing sound. If it does not exist,
+                          it checks the path as relative to resources dir
         snr (float): Signal-to-noise ratio
+
+    Returns:
+        (numpy array): Output signal
     """
     if not os.path.isfile(sound_path):
         resource_sound_path = os.path.join(os.path.dirname(__file__),
@@ -52,7 +59,18 @@ def mix_with_sound(x, sr, sound_path, snr):
 
 
 def convolve(x, sr, ir_path, level=1.0):
-    """ Apply convolution to x using impulse response given
+    """ Apply convolution to x using given impulse response (as wav file)
+
+    Args:
+        x (numpy array): Input signal
+        sr (int): Sample rate
+        ir_path (string): Path of impulse response file (wav). If it does not
+                          exist, it checks the path as relative to resources
+                          dir
+        level (float): Level of wet/dry signals (1.0=wet)
+
+    Returns:
+        (numpy array): Output signal
     """
     if not os.path.isfile(ir_path):
         resource_ir_path = os.path.join(os.path.dirname(__file__),
@@ -67,11 +85,29 @@ def convolve(x, sr, ir_path, level=1.0):
 
 
 def tmp_path(ext=''):
+    """ Returns path of temporary file
+
+    Args:
+        ext (string): Extension of temporal file
+
+    Returns:
+        (string) Path of temporary file
+    """
     tf = tempfile.NamedTemporaryFile()
     return tf.name + ext
 
 
 def ffmpeg(in_wav, out_wav):
+    """ Run ffmpeg to convert in_wav into out_wav with codec pcm_s16le
+
+    It guarantees that the output has the standard codec pcm_s16le
+
+    TODO: Support to other formats (e.g. stereo)
+
+    Args:
+        in_wav (string): Path of input wav (any codec)
+        out_wav (string): Path of output wav (codec pcm_s16le)
+    """
     cmd = ("ffmpeg -y -i {0} -ac 1 " +
            "-acodec pcm_s16le -async 1 {1}").format(
         in_wav, out_wav)
@@ -80,10 +116,17 @@ def ffmpeg(in_wav, out_wav):
                          stderr=subprocess.PIPE)
     out, err = p.communicate()
     if p.returncode != 0:
-        print "ERROR!"
+        logging.error("Error running ffmpeg!")
 
 
 def lame(in_wav, out_mp3, degree):
+    """ Run mp3 compression with lame
+
+    Args:
+        in_wav (string): Path of input wav
+        out_mp3 (string): Path of output mp3
+        degree (int): Degree of compression (from 1 to 5)
+    """
     kbps_map = {
         1: 8,
         2: 16,
@@ -98,10 +141,20 @@ def lame(in_wav, out_mp3, degree):
                          stderr=subprocess.PIPE)
     out, err = p.communicate()
     if p.returncode != 0:
-        print "ERROR!"
+        logging.error("Error running lame!")
 
 
 def apply_mp3(x, sr, degree):
+    """ Apply mp3 compression to signal contained in numpy array
+
+    Args:
+        x (numpy array): Input signal
+        sr (int): Sample rate
+        degree (int): Degree of compression (from 1 to 5)
+
+    Returns:
+        (numpy array) Output signal
+    """
     logging.info("MP3 compression. Degree %d" % degree)
     tmp_file_0 = tmp_path('.wav')
     tmp_file_1 = tmp_path('.wav')
@@ -118,6 +171,13 @@ def apply_mp3(x, sr, degree):
 
 def apply_gain(x, gain):
     """ Apply gain to x
+
+    Args:
+        x (numpy array): Input signal
+        gain (float): Gain
+
+    Returns:
+        (numpy array): Output signal
     """
     logging.info("Apply gain %f dB" % gain)
     x = np.copy(x)
@@ -127,10 +187,29 @@ def apply_gain(x, gain):
 
 
 def trim_beginning(x, nsamples):
+    """ Trim beginning of file
+
+    Args:
+        x (numpy array): Input signal
+        nsamples (int): Number of samples to trim from the beginning
+
+    Returns:
+        (numpy array): Output signal
+    """
     return x[nsamples:]
 
 
 def apply_dr_compression(x, sr, degree):
+    """ Apply dynamic range compression using sox
+
+    Args:
+        x (numpy array): Input signal
+        sr (int): Sample rate
+        degree (int): Degree of compression (from 1 to 3)
+
+    Returns:
+        (numpy array): Output signal
+    """
     tmp_file_0 = tmp_path('.wav')
     tmp_file_1 = tmp_path('.wav')
     lr.output.write_wav(tmp_file_0,
@@ -147,19 +226,38 @@ def apply_dr_compression(x, sr, degree):
                          stderr=subprocess.PIPE)
     out, err = p.communicate()
     if p.returncode != 0:
-        print "ERROR!"
+        logging.error("Error running sox!")
     y, sr = lr.core.load(tmp_file_1, sr=sr, mono=True)
     remove_tmp_files([tmp_file_0, tmp_file_1])
     return y
 
 
 def normalize(x, percentage=1.0):
+    """ Normalize signal
+
+    Args:
+        x (numpy array): Input signal
+        percentage (float): Percentage to full-scale to normalize
+
+    Returns:
+        (numpy array): Output signal
+    """
     max_peak = np.max(np.abs(x))
     return x / max_peak * percentage
 
 
-def apply_eq(x, sr, value):
-    freq, bw, gain = map(int, value.split('//'))
+def apply_eq(x, sr, parameters):
+    """ Apply equalization using sox
+
+    Args:
+        x (numpy array): Input signal
+        sr (int): Sample rate
+        parameters (string): Eq. parameters as 'freq(hz)//bw(hz)//gain(db)'
+
+    Returns:
+        (numpy array): Output signal
+    """
+    freq, bw, gain = map(int, parameters.split('//'))
     logging.info("Equalizing. f=%f, bw=%f, gain=%f" % (freq, bw, gain))
     tmp_file_0 = tmp_path('.wav')
     tmp_file_1 = tmp_path('.wav')
@@ -176,7 +274,7 @@ def apply_eq(x, sr, value):
                          stderr=subprocess.PIPE)
     out, err = p.communicate()
     if p.returncode != 0:
-        print "ERROR!"
+        logging.error("Error running sox!")
     y, sr = lr.core.load(tmp_file_1, sr=sr, mono=True)
     remove_tmp_files([tmp_file_0, tmp_file_1])
     return y
@@ -187,7 +285,7 @@ def main(input_wav, degradations_list, output_wav):
 
     Args:
         input_wav (str): Path of input wav
-        degradations_list (list): List of degradations (e.g. ['mp3,1'])
+        degradations_list (list of strings): List of degradations
         output_wav (str): Path of outpu wav
     """
     x, sr = lr.core.load(input_wav, mono=True)
