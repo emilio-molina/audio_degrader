@@ -50,6 +50,11 @@ if __name__ == "__main__":
                         dest='list_resources',
                         help='List all available resources')
     args = vars(parser.parse_args())
+    if (not args['input'] or
+        not args['output'] or
+            not args['degradations']) and not args['list_resources']:
+        parser.print_help()
+        exit(1)
     if args['list_resources']:
         resources_dir = os.path.join(audio_degrader.__path__[0],
                                      'resources')
