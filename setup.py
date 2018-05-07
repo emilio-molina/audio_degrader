@@ -10,7 +10,7 @@ setup(
     url='https://github.com/EliosMolina/audio_degrader',
     download_url='https://github.com/EliosMolina/audio_degrader/archive/master.zip',
     keywords=['audio', 'degradation', 'augmentation'],
-    install_requires=['numpy >= 1.14.3', 'librosa >= 0.6.0'],
+    install_requires=['librosa >= 0.6.0'],
     package_data={'audio_degrader': ['resources/impulse_responses/*',
                                      'resources/sounds/*']},
     scripts=['scripts/audio_degrader'],
