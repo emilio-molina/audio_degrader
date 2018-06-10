@@ -288,7 +288,7 @@ def main(input_wav, degradations_list, output_wav):
         degradations_list (list of strings): List of degradations
         output_wav (str): Path of outpu wav
     """
-    x, sr = lr.core.load(input_wav, mono=True)
+    x, sr = lr.core.load(input_wav, sr=None, mono=True)
     for degradation in degradations_list:
         degradation_name, value = degradation.split(',')
         if degradation_name == 'mp3':
