@@ -4,9 +4,44 @@ import numpy as np
 from audio_degrader import mix_with_sound, convolve, ffmpeg, lame, apply_gain
 from audio_degrader import apply_eq, tmp_path, remove_tmp_files
 from audio_degrader import apply_dr_compression
+from audio_degrader import AudioFile
 
 TEST_STEREO_WAV_PATH = './tests/test_files/test30s_44100_stereo_pcm16le.wav'
 TEST_MONO_WAV_PATH = './tests/test_files/test30s_44100_mono_pcm16le.wav'
+TEST_MONO_8K_WAV_PATH = './tests/test_files/test30s_8000_mono_pcm16le.wav'
+
+
+class TestAudioFile:
+
+    def setup_class(self):
+        pass
+
+    def test_mono(self):
+        audio_file = AudioFile(TEST_MONO_WAV_PATH)
+        audio_file.create_tmp_file()
+        assert os.path.isfile(audio_file.tmp_path)
+        x, sr = lr.core.load(audio_file.tmp_path, sr=None, mono=False)
+        assert sr == 44100, "Sample rate different than original"
+        assert len(x.shape) == 2, "Tmp file should be stereo"
+
+    def test_mono_8k(self):
+        audio_file = AudioFile(TEST_MONO_8K_WAV_PATH)
+        audio_file.create_tmp_file()
+        assert os.path.isfile(audio_file.tmp_path)
+        x, sr = lr.core.load(audio_file.tmp_path, sr=None, mono=False)
+        assert sr == 8000, "Sample rate different than original"
+        assert len(x.shape) == 2, "Tmp file should be stereo"
+
+    def test_stereo(self):
+        audio_file = AudioFile(TEST_STEREO_WAV_PATH)
+        audio_file.create_tmp_file()
+        assert os.path.isfile(audio_file.tmp_path)
+        x, sr = lr.core.load(audio_file.tmp_path, sr=None, mono=False)
+        assert sr == 44100, "Sample rate different than original"
+        assert len(x.shape) == 2, "Tmp file should be stereo"
+
+    def teardown_class(self):
+        pass
 
 
 class TestMono:
