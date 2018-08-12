@@ -32,11 +32,11 @@ class Degradation(object):
         self.parameters_values = parameters_values
 
     @abstractmethod
-    def apply(self, audio_file):
-        """ Process audio_file.samples field
+    def apply(self, degraded_audio_file):
+        """ Process degraded_audio_file.samples field
 
         Args:
-            audio_file (DegradedAudioFile): Audio file to be processed
+            degraded_audio_file (DegradedAudioFile): Audio file to be processed
         """
         pass
 
@@ -49,67 +49,68 @@ class DegradationTrim(Degradation):
         parameters_info = [("start_time", 0.1, "seconds")]
         self.set_documentation_info(name, description, parameters_info)
 
-    def apply(self, audio_file):
+    def apply(self, degraded_audio_file):
         start_time = self.parameters_values["start_time"]
-        start_sample = int(start_time * audio_file.sample_rate)
-        audio_file.samples = audio_file.samples[:, start_sample:]
+        start_sample = int(start_time * degraded_audio_file.sample_rate)
+        degraded_audio_file.samples = degraded_audio_file.samples[:,
+                                                                  start_sample:]
 
 
 class DegradationMp3(Degradation):
 
-    def apply(self, audio_file):
+    def apply(self, degraded_audio_file):
         pass
 
 
 class DegradationGain(Degradation):
 
-    def apply(self, audio_file):
+    def apply(self, degraded_audio_file):
         pass
 
 
 class DegradationNormalization(Degradation):
 
-    def apply(self, audio_file):
+    def apply(self, degraded_audio_file):
         pass
 
 
 class DegradationMix(Degradation):
 
-    def apply(self, audio_file):
+    def apply(self, degraded_audio_file):
         pass
 
 
 class DegradationConvolution(Degradation):
 
-    def apply(self, audio_file):
+    def apply(self, degraded_audio_file):
         pass
 
 
 class DegradationDynamicRangeCompression(Degradation):
 
-    def apply(self, audio_file):
+    def apply(self, degraded_audio_file):
         pass
 
 
 class DegradationSpeed(Degradation):
 
-    def apply(self, audio_file):
+    def apply(self, degraded_audio_file):
         pass
 
 
 class DegradationTimeStretching(Degradation):
 
-    def apply(self, audio_file):
+    def apply(self, degraded_audio_file):
         pass
 
 
 class DegradationPitchShifting(Degradation):
 
-    def apply(self, audio_file):
+    def apply(self, degraded_audio_file):
         pass
 
 
 class DegradationEqualization(Degradation):
 
-    def apply(self, audio_file):
+    def apply(self, degraded_audio_file):
         pass
