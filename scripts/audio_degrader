@@ -2,6 +2,8 @@
 import os
 import argparse
 import audio_degrader
+from audio_degrader import ParametersParser, DegradationTrim
+
 
 EXAMPLE_STR = '    audio_degrader -i {0} -d {1} -o {2}'.format(
     'input.wav',
@@ -13,6 +15,8 @@ EXAMPLE_STR = '    audio_degrader -i {0} -d {1} -o {2}'.format(
     'output.wav')
 
 if __name__ == "__main__":
+    pp = ParametersParser([DegradationTrim])
+    print pp.get_help()
     parser = argparse.ArgumentParser(
         description="""Process audio with a sequence of degradations
     Accepted degradadations:
@@ -67,7 +71,3 @@ if __name__ == "__main__":
                     print "  " + os.path.join(rel_dir, fname)
 
         exit(0)
-
-    audio_degrader.main(args['input'],
-                        args['degradations'],
-                        args['output'])
