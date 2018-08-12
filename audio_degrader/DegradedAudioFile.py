@@ -13,7 +13,8 @@ class DegradedAudioFile(object):
         self.applied_degradations = []
         self.audio_path = audio_path
         self.tmp_path = os.path.join(tmp_dir,
-                                     basename + str(uuid.uuid4()) + '.wav')
+                                     (basename + '__tmp__' +
+                                      str(uuid.uuid4()) + '.wav'))
         self._create_tmp_mirror_file()
 
     def _create_tmp_mirror_file(self):
