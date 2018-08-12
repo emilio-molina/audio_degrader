@@ -2,43 +2,52 @@ from abc import ABCMeta, abstractmethod
 
 
 class Degradation(object):
+    """ Abstract class to implement degradations
+    """
     __metaclass__ = ABCMeta
 
-    def __init__(self):
-        self.name = "name"
-        self.description = "description"
-        self.set_parameters_units()
-        self.set_parameters_example_values()
+    def set_documentation_info(self,
+                               name,
+                               description,
+                               parameters_info=[]):
+        """ Set information to create a help string about degradation
 
-    def set_parameters_example_values(self,
-            parameters_example_values={'parameter1': 'value1',
-                                       'parameter2': 'value2'}):
-        self.parameters_example_values = parameters_example_values
-
-    def set_parameters_units(self,
-            parameters_units={'parameter1': 'unit1',
-                              'parameter2': 'unit2'}):
-        self.parameters_units = parameters_units
+        Args:
+            name (str): Name of degradation
+            description (str): Short description of degradation
+            parameters_info (list): Information about each parameter. The list
+                                    contains tuples with the following info:
+                                    [(param_name, example_value, unit),...]
+        """
+        self.name = name
+        self.description = description
+        self.parameters_info = parameters_info
 
     def __str__(self):
         return self.name
 
     def set_parameters_values(self, parameters_values={}):
+        """ Set all parameters before calling apply method
+        """
         self.parameters_values = parameters_values
 
     @abstractmethod
     def apply(self, audio_file):
+        """ Process audio_file.samples field
+
+        Args:
+            audio_file (DegradedAudioFile): Audio file to be processed
+        """
         pass
 
 
 class DegradationTrim(Degradation):
 
     def __init__(self):
-        START_TIME = "start_time"
-        self.name = "trim_from"
-        self.description = "Trim audio from start"
-        self.set_parameters_units({START_TIME, "seconds"})
-        self.set_parameters_example_values({START_TIME: 0.1})
+        name = "trim_from"
+        description = "Trim audio from start"
+        parameters_info = [("start_time", 0.1, "seconds")]
+        self.set_documentation_info(name, description, parameters_info)
 
     def apply(self, audio_file):
         start_time = self.parameters_values["start_time"]
