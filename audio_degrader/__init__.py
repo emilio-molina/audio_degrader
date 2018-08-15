@@ -1,5 +1,5 @@
 from DegradedAudioFile import DegradedAudioFile
-from Degradations import Degradation
+from Degradations import Degradation, DegradationUsageDocGenerator
 from Degradations import DegradationTrim
 from Degradations import DegradationMp3
 from Degradations import DegradationGain
@@ -15,6 +15,7 @@ from ParametersParser import ParametersParser
 
 __all__ = ["DegradedAudioFile",
            "Degradation",
+           "DegradationUsageDocGenerator",
            "DegradationTrim",
            "DegradationMp3",
            "DegradationGain",

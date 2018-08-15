@@ -43,7 +43,6 @@ class TestDegradedAudioFile:
         for daf in self.dafs:
             old_samples = np.copy(daf.samples)
             d = DegradationInvert()
-            d.set_documentation_info("DegradationInvert", None, None)
             daf.apply_degradation(d)
             samples, _ = lr.core.load(daf.tmp_path,
                                       sr=None, mono=False)

@@ -6,27 +6,24 @@ import numpy as np
 import os
 
 
+NAME_SEP = ","
+PARAMETERS_SEP = "//"
+DESCRIPTION_SEP = ": "
+
+
 class Degradation(object):
     """ Abstract class to implement degradations
     """
     __metaclass__ = ABCMeta
+    name = "AbstractDegradation"  # Name of degradation
+    description = "Abstract degradation"  # Short description of degradation
+    parameters_info = [('param1', 1.0, 'Parameter one [unit1]'),
+                       ('param2', 0.5, 'Parameter two [unit2]')]
+    """ list: Information about each parameter.
 
-    def set_documentation_info(self,
-                               name,
-                               description,
-                               parameters_info=[]):
-        """ Set information to create a help string about degradation
-
-        Args:
-            name (str): Name of degradation
-            description (str): Short description of degradation
-            parameters_info (list): Information about each parameter. The list
-                                    contains tuples with the following info:
-                                    [(param_name, example_value, unit),...]
-        """
-        self.name = name
-        self.description = description
-        self.parameters_info = parameters_info
+    The list contains tuples with the following info:
+        [(param_name, example_value, description),...]
+    """
 
     def __str__(self):
         return self.name
@@ -46,13 +43,61 @@ class Degradation(object):
         pass
 
 
+class DegradationUsageDocGenerator(object):
+
+    @staticmethod
+    def get_degradation_help_header(degradation):
+        help_str = "{0}{1}".format(degradation.name, NAME_SEP)
+        help_str += PARAMETERS_SEP.join(
+            map(lambda x: x[0], degradation.parameters_info))
+        help_str += DESCRIPTION_SEP
+        base_indent = " " * len(help_str)
+        return help_str, base_indent
+
+    @staticmethod
+    def get_degradation_help_params_info(degradation, base_indent):
+        indent = base_indent + "    "
+        help_params_info_str = "\n{0}parameters:".format(base_indent)
+        for p in degradation.parameters_info:
+            help_params_info_str += "\n{0}{1}{2}{3}".format(
+                indent, p[0], DESCRIPTION_SEP, p[2])
+        return help_params_info_str
+
+    @staticmethod
+    def get_degradation_help_example(degradation, base_indent):
+        indent = base_indent + "    "
+        help_example_str = "\n{0}example:".format(base_indent)
+        help_example_str += "\n{0}{1}{2}".format(indent,
+                                                 degradation.name,
+                                                 NAME_SEP)
+        help_example_str += PARAMETERS_SEP.join(
+            map(lambda x: "{0}".format(x[1]), degradation.parameters_info))
+        return help_example_str
+
+    @staticmethod
+    def get_degradation_help_description(degradation):
+        return degradation.description
+
+    @staticmethod
+    def get_degradation_help(degradation):
+        help_str, base_indent = DegradationUsageDocGenerator.\
+            get_degradation_help_header(degradation)
+        help_str = (
+            help_str +
+            DegradationUsageDocGenerator.get_degradation_help_description(
+                degradation) +
+            DegradationUsageDocGenerator.get_degradation_help_params_info(
+                degradation, base_indent) +
+            DegradationUsageDocGenerator.get_degradation_help_example(
+                degradation, base_indent))
+        return help_str
+
+
 class DegradationTrim(Degradation):
 
-    def __init__(self):
-        name = "trim_from"
-        description = "Trim audio from start"
-        parameters_info = [("start_time", 0.1, "seconds")]
-        self.set_documentation_info(name, description, parameters_info)
+    name = "trim_from"
+    description = "Trim audio from start"
+    parameters_info = [("start_time", 0.1, "Trim start [seconds]")]
 
     def apply(self, degraded_audio_file):
         start_time = self.parameters_values["start_time"]
@@ -63,11 +108,9 @@ class DegradationTrim(Degradation):
 
 class DegradationMp3(Degradation):
 
-    def __init__(self):
-        name = "transcode_to_mp3"
-        description = "Emulate mp3 transcoding"
-        parameters_info = [("bitrate", "320k", "bps")]
-        self.set_documentation_info(name, description, parameters_info)
+    name = "mp3"
+    description = "Emulate mp3 transcoding"
+    parameters_info = [("bitrate", "320k", "Quality [bps]")]
 
     def apply(self, degraded_audio_file):
         bitrate = self.parameters_values["bitrate"]
@@ -90,11 +133,9 @@ class DegradationMp3(Degradation):
 
 class DegradationGain(Degradation):
 
-    def __init__(self):
-        name = "gain"
-        description = "Apply gain expressed in dBs"
-        parameters_info = [("gain", "6", "dB")]
-        self.set_documentation_info(name, description, parameters_info)
+    name = "gain"
+    description = "Apply gain expressed in dBs"
+    parameters_info = [("gain", "6", "Gain value [dB]")]
 
     def apply(self, degraded_audio_file):
         gain = self.parameters_values["gain"]

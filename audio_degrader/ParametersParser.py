@@ -1,5 +1,3 @@
-PARAMETER_SEP = "//"
-
 
 class ParametersParser:
     def __init__(self, degradations):

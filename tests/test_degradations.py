@@ -3,6 +3,7 @@ import shutil
 import librosa as lr
 import numpy as np
 import logging
+from audio_degrader import Degradation, DegradationUsageDocGenerator
 from audio_degrader import DegradationTrim, DegradedAudioFile
 from audio_degrader import DegradationMp3, DegradationGain
 
@@ -77,3 +78,25 @@ class TestDegradationGain:
 
     def teardown_class(self):
         shutil.rmtree(TMP_PATH)
+
+
+class TestDegradationUsageDocGenerator:
+
+    def test_degradation_help(self):
+
+        class DegrTest(Degradation):
+            name = "testdeg"
+            description = "Degradation for this test"
+            parameters_info = [("param1", 2.0, "Parameter one [dBs]"),
+                               ("param2", 3.0, "Parameter two [seconds]")]
+        degradation_trim_help = (
+            DegradationUsageDocGenerator.get_degradation_help(DegrTest))
+        target_docstring = """testdeg,param1//param2: Degradation for this test
+                        parameters:
+                            param1: Parameter one [dBs]
+                            param2: Parameter two [seconds]
+                        example:
+                            testdeg,2.0//3.0"""
+        logging.debug("\n" + degradation_trim_help)
+        logging.debug(target_docstring)
+        assert degradation_trim_help == target_docstring
