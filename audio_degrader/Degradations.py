@@ -45,18 +45,21 @@ class Degradation(object):
 
 class DegradationUsageDocGenerator(object):
 
+    base_indent = " " * 8
+    indent = " " * 12
+
     @staticmethod
     def get_degradation_help_header(degradation):
-        help_str = "{0}{1}".format(degradation.name, NAME_SEP)
+        help_str = "    {0}{1}".format(degradation.name, NAME_SEP)
         help_str += PARAMETERS_SEP.join(
             map(lambda x: x[0], degradation.parameters_info))
         help_str += DESCRIPTION_SEP
-        base_indent = " " * len(help_str)
-        return help_str, base_indent
+        return help_str
 
     @staticmethod
-    def get_degradation_help_params_info(degradation, base_indent):
-        indent = base_indent + "    "
+    def get_degradation_help_params_info(degradation):
+        base_indent = DegradationUsageDocGenerator.base_indent
+        indent = DegradationUsageDocGenerator.indent
         help_params_info_str = "\n{0}parameters:".format(base_indent)
         for p in degradation.parameters_info:
             help_params_info_str += "\n{0}{1}{2}{3}".format(
@@ -64,8 +67,9 @@ class DegradationUsageDocGenerator(object):
         return help_params_info_str
 
     @staticmethod
-    def get_degradation_help_example(degradation, base_indent):
-        indent = base_indent + "    "
+    def get_degradation_help_example(degradation):
+        base_indent = DegradationUsageDocGenerator.base_indent
+        indent = DegradationUsageDocGenerator.indent
         help_example_str = "\n{0}example:".format(base_indent)
         help_example_str += "\n{0}{1}{2}".format(indent,
                                                  degradation.name,
@@ -80,23 +84,22 @@ class DegradationUsageDocGenerator(object):
 
     @staticmethod
     def get_degradation_help(degradation):
-        help_str, base_indent = DegradationUsageDocGenerator.\
-            get_degradation_help_header(degradation)
         help_str = (
-            help_str +
+            DegradationUsageDocGenerator.get_degradation_help_header(
+                degradation) +
             DegradationUsageDocGenerator.get_degradation_help_description(
                 degradation) +
             DegradationUsageDocGenerator.get_degradation_help_params_info(
-                degradation, base_indent) +
+                degradation) +
             DegradationUsageDocGenerator.get_degradation_help_example(
-                degradation, base_indent))
+                degradation))
         return help_str
 
 
 class DegradationTrim(Degradation):
 
     name = "trim_from"
-    description = "Trim audio from start"
+    description = "Trim audio from a given start time"
     parameters_info = [("start_time", 0.1, "Trim start [seconds]")]
 
     def apply(self, degraded_audio_file):
@@ -135,13 +138,13 @@ class DegradationGain(Degradation):
 
     name = "gain"
     description = "Apply gain expressed in dBs"
-    parameters_info = [("gain", "6", "Gain value [dB]")]
+    parameters_info = [("value", "6", "Gain value [dB]")]
 
     def apply(self, degraded_audio_file):
-        gain = self.parameters_values["gain"]
-        logging.info("Apply gain %f dB" % gain)
+        value = self.parameters_values["value"]
+        logging.info("Apply gain %f dB" % value)
         x = degraded_audio_file.samples
-        x = x * (10 ** (gain / 20.0))
+        x = x * (10 ** (value / 20.0))  # linear value
         x = np.minimum(np.maximum(-1.0, x), 1.0)
         degraded_audio_file.samples = x
 

@@ -69,12 +69,12 @@ class TestDegradationGain:
 
     def test_degradation_gain(self):
         degradation_gain = DegradationGain()
-        gain = -6
-        degradation_gain.set_parameters_values({'gain': gain})
+        value = -6
+        degradation_gain.set_parameters_values({'value': value})
         sum_before = np.sum(np.abs(self.daf.samples))
         self.daf.apply_degradation(degradation_gain)
         sum_after = np.sum(np.abs(self.daf.samples))
-        assert (np.abs(sum_after / sum_before - 10**(gain/20.0)) < 0.001)
+        assert (np.abs(sum_after / sum_before - 10**(value/20.0)) < 0.001)
 
     def teardown_class(self):
         shutil.rmtree(TMP_PATH)
@@ -91,12 +91,13 @@ class TestDegradationUsageDocGenerator:
                                ("param2", 3.0, "Parameter two [seconds]")]
         degradation_trim_help = (
             DegradationUsageDocGenerator.get_degradation_help(DegrTest))
-        target_docstring = """testdeg,param1//param2: Degradation for this test
-                        parameters:
-                            param1: Parameter one [dBs]
-                            param2: Parameter two [seconds]
-                        example:
-                            testdeg,2.0//3.0"""
+        target_docstring = '\n'.join((
+            "    testdeg,param1//param2: Degradation for this test",
+            "        parameters:",
+            "            param1: Parameter one [dBs]",
+            "            param2: Parameter two [seconds]",
+            "        example:",
+            "            testdeg,2.0//3.0"))
         logging.debug("\n" + degradation_trim_help)
         logging.debug(target_docstring)
         assert degradation_trim_help == target_docstring
