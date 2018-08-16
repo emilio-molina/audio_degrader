@@ -2,6 +2,11 @@ import subprocess
 import logging
 
 
+NAME_SEP = ","
+PARAMETERS_SEP = "//"
+DESCRIPTION_SEP = ": "
+
+
 def run(cmd):
     logging.debug(cmd)
     p = subprocess.Popen(cmd, shell=True,

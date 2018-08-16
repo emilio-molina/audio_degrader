@@ -12,6 +12,8 @@ class DegradedAudioFile(object):
         basename = os.path.basename(audio_path)
         self.applied_degradations = []
         self.audio_path = audio_path
+        if not os.path.isdir(tmp_dir):
+            os.makedirs(tmp_dir)
         self.tmp_path = os.path.join(tmp_dir,
                                      (basename + '__tmp__' +
                                       str(uuid.uuid4()) + '.wav'))

@@ -2,12 +2,28 @@
 import os
 import argparse
 import audio_degrader
+import logging
 from audio_degrader import ParametersParser
 from audio_degrader import DegradationTrim
 from audio_degrader import DegradationGain
 from audio_degrader import DegradationMp3
 from audio_degrader import DegradationUsageDocGenerator
+from audio_degrader import DegradedAudioFile
 
+
+DEFAULT_TMP_DIR = "./audio_degrader_tmp"
+
+def main(in_wav, tmp_dir, degradations_args, out_wav):
+    logging.info("Creating DegradedAudioFile object")
+    degraded_audio_file = DegradedAudioFile(in_wav, tmp_dir)
+    logging.info("Parsing degradations list")
+    degradations = ParametersParser.parse_degradations_args(degradations_args)
+    for degradation in degradations:
+        logging.info("Applying {0} with parameters {1}".format(
+            degradation.name, degradation.parameters_values))
+        degraded_audio_file.apply_degradation(degradation)
+    logging.info("Exporting to wav")
+    degraded_audio_file.to_wav(out_wav)
 
 if __name__ == "__main__":
     main_description = "Process audio with a sequence of degradations:\n"
@@ -28,6 +44,11 @@ if __name__ == "__main__":
     parser.add_argument('-i', '--input',
                         type=str,
                         help='Input audio wav')
+    parser.add_argument('-t', '--tmpdir',
+                        type=str,
+                        help=('Temporal directory. ' +
+                              'Default: {0}'.format(DEFAULT_TMP_DIR)),
+                        default=DEFAULT_TMP_DIR)
     parser.add_argument('-d', '--degradations', metavar='degradation,params',
                         type=str,
                         nargs='*',
@@ -38,7 +59,19 @@ if __name__ == "__main__":
     parser.add_argument('-l', '--list-resources', action='store_true',
                         dest='list_resources',
                         help='List all available resources')
+    parser.add_argument('-v', '--verbosity_level', dest='verbosity_level',
+                        type=str,
+                        help=('Options: ERROR, WARNING, INFO, DEBUG. ' +
+                              'Default: WARNING'),
+                        default='WARNING')
     args = vars(parser.parse_args())
+    logging_levels = {'ERROR': logging.ERROR,
+                      'WARNING': logging.WARNING,
+                      'INFO': logging.INFO,
+                      'DEBUG': logging.DEBUG}
+    logging.basicConfig(level=logging_levels[args['verbosity_level']])
+
+
     if (not args['input'] or
         not args['output'] or
             not args['degradations']) and not args['list_resources']:
@@ -54,5 +87,9 @@ if __name__ == "__main__":
             for fname in fnames:
                 if os.path.splitext(fname)[1] == '.wav':
                     print "  " + os.path.join(rel_dir, fname)
-
         exit(0)
+
+    main(args['input'],
+         args['tmpdir'],
+         args['degradations'],
+         args['output'])

@@ -1,14 +1,9 @@
 from abc import ABCMeta, abstractmethod
-from utils import run
+from utils import run, NAME_SEP, PARAMETERS_SEP, DESCRIPTION_SEP
 import librosa as lr
 import logging
 import numpy as np
 import os
-
-
-NAME_SEP = ","
-PARAMETERS_SEP = "//"
-DESCRIPTION_SEP = ": "
 
 
 class Degradation(object):
@@ -103,7 +98,7 @@ class DegradationTrim(Degradation):
     parameters_info = [("start_time", 0.1, "Trim start [seconds]")]
 
     def apply(self, degraded_audio_file):
-        start_time = self.parameters_values["start_time"]
+        start_time = float(self.parameters_values["start_time"])
         start_sample = int(start_time * degraded_audio_file.sample_rate)
         degraded_audio_file.samples = degraded_audio_file.samples[
             :, start_sample:]
@@ -116,7 +111,7 @@ class DegradationMp3(Degradation):
     parameters_info = [("bitrate", "320k", "Quality [bps]")]
 
     def apply(self, degraded_audio_file):
-        bitrate = self.parameters_values["bitrate"]
+        bitrate = str(self.parameters_values["bitrate"])
         tmp_mp3_path = degraded_audio_file.tmp_path + ".mp3"
         tmp_wav_path = degraded_audio_file.tmp_path + ".mp3.wav"
         out, err = run("ffmpeg -y -i {0} -b:a {1} {2}".format(
@@ -141,7 +136,7 @@ class DegradationGain(Degradation):
     parameters_info = [("value", "6", "Gain value [dB]")]
 
     def apply(self, degraded_audio_file):
-        value = self.parameters_values["value"]
+        value = float(self.parameters_values["value"])
         logging.info("Apply gain %f dB" % value)
         x = degraded_audio_file.samples
         x = x * (10 ** (value / 20.0))  # linear value
