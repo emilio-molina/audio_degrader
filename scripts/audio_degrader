@@ -12,9 +12,17 @@ from audio_degrader import ALL_DEGRADATIONS
 DEFAULT_TMP_DIR = "./audio_degrader_tmp"
 
 def main(in_wav, tmp_dir, degradations_args, out_wav):
+    """ Apply sequence of degradations to in_wav and stores result in out_wav
+
+    Args:
+        in_wav (string): Path of input wav file (any format)
+        tmp_dir (string): Path of directory for temporary files
+        degradations_args (list of strings): List of degradations to be applied
+        out_wav (string): Path of output wav file (always stereo)
+    """
     logging.info("Creating DegradedAudioFile object")
     degraded_audio_file = DegradedAudioFile(in_wav, tmp_dir)
-    logging.info("Parsing degradations list")
+    logging.info("Parsing degradations list: {0}".format(degradations_args))
     degradations = ParametersParser.parse_degradations_args(degradations_args)
     for degradation in degradations:
         logging.info("Applying {0}".format(degradation.name))

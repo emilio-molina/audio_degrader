@@ -7,8 +7,8 @@ import os
 
 
 class Degradation(object):
-    """ Abstract class to implement degradations
-    """
+    """ Abstract class to implement degradations """
+
     __metaclass__ = ABCMeta
     name = "AbstractDegradation"  # Name of degradation
     description = "Abstract degradation"  # Short description of degradation
@@ -39,12 +39,22 @@ class Degradation(object):
 
 
 class DegradationUsageDocGenerator(object):
+    """ It generates documentation strings about a given degradation """
 
     base_indent = " " * 8
     indent = " " * 12
 
     @staticmethod
     def get_degradation_help_header(degradation):
+        """ Generate help header given a degradation
+
+        e.g. gain,value:
+
+        Args:
+            degradation (Degradation): Input degradation
+        Returns:
+            (string): Help header
+        """
         help_str = "    {0}".format(degradation.name)
         has_params = len(degradation.parameters_info) > 0
         if has_params:
@@ -56,6 +66,16 @@ class DegradationUsageDocGenerator(object):
 
     @staticmethod
     def get_degradation_help_params_info(degradation):
+        """ Generate parameters info given a degradation
+
+        e.g. parameters:
+                 value: Gain value [dB]
+
+        Args:
+            degradation (Degradation): Input degradation
+        Returns:
+            (string): Parameters information
+        """
         base_indent = DegradationUsageDocGenerator.base_indent
         indent = DegradationUsageDocGenerator.indent
         help_params_info_str = "\n{0}parameters:".format(base_indent)
@@ -66,6 +86,16 @@ class DegradationUsageDocGenerator(object):
 
     @staticmethod
     def get_degradation_help_example(degradation):
+        """ Generate help example given a degradation
+
+        e.g. example:
+                 gain,6
+
+        Args:
+            degradation (Degradation): Input degradation
+        Returns:
+            (string): Help example
+        """
         base_indent = DegradationUsageDocGenerator.base_indent
         indent = DegradationUsageDocGenerator.indent
         help_example_str = "\n{0}example:".format(base_indent)
@@ -80,10 +110,30 @@ class DegradationUsageDocGenerator(object):
 
     @staticmethod
     def get_degradation_help_description(degradation):
+        """ Generate help description given a degradation
+
+        Args:
+            degradation (Degradation): Input degradation
+        Returns:
+            (string): Degradation description
+        """
         return degradation.description
 
     @staticmethod
     def get_degradation_help(degradation):
+        """ Generate complete help for a given degradation
+
+        e.g. gain,value: Apply gain expressed in dBs
+             parameters:
+                 value: Gain value [dB]
+             example:
+                 gain,6
+
+        Args:
+            degradation (Degradation): Input degradation
+        Returns:
+            (string): Degradation help docstring
+        """
         help_str = (
             DegradationUsageDocGenerator.get_degradation_help_header(
                 degradation) +
