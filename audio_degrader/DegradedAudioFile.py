@@ -20,7 +20,8 @@ class DegradedAudioFile(object):
         self._create_tmp_mirror_file()
 
     def _create_tmp_mirror_file(self):
-        out, err = run("ffmpeg -y -i {0} -ac 2 -acodec pcm_s32le {1}".format(
+        out, err = run(('ffmpeg -y -i {0} -af "pan=stereo|c0=c0|c1=c0" ' +
+                        '-acodec pcm_s32le {1}').format(
             self.audio_path, self.tmp_path))
         self.samples, self.sample_rate = lr.core.load(self.tmp_path,
                                                       sr=None, mono=False)
