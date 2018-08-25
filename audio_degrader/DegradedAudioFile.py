@@ -54,3 +54,11 @@ class DegradedAudioFile(object):
 
     def delete_tmp_mirror_file(self):
         os.remove(self.tmp_path)
+
+    def resample(self, new_sample_rate):
+        self.samples = lr.core.resample(self.samples, self.sample_rate,
+                                        new_sample_rate)
+        self.sample_rate = new_sample_rate
+        self._update_mirror_file()
+        self.samples, self.sample_rate = lr.core.load(self.tmp_path,
+                                                      sr=None, mono=False)

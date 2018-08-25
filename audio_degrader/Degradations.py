@@ -313,6 +313,17 @@ class DegradationMix(Degradation):
         degraded_audio_file.samples = y
 
 
+class DegradationResample(Degradation):
+
+    name = "resample"
+    description = "Resample to given sample rate"
+    parameters_info = [("sample_rate", "8000", "Desired sample rate [Hz]")]
+
+    def apply(self, degraded_audio_file):
+        degraded_audio_file.resample(
+            int(self.parameters_values['sample_rate']))
+
+
 class DegradationConvolution(Degradation):
 
     def apply(self, degraded_audio_file):
@@ -354,5 +365,6 @@ ALL_DEGRADATIONS = {
     DegradationMp3.name: DegradationMp3,
     DegradationGain.name: DegradationGain,
     DegradationNormalization.name: DegradationNormalization,
-    DegradationMix.name: DegradationMix
+    DegradationMix.name: DegradationMix,
+    DegradationResample.name: DegradationResample
 }
