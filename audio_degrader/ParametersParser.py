@@ -61,7 +61,7 @@ class ParametersParser(object):
         Args:
             degradation_args (list of string): Input degradations arguments
         Returns:
-            (list of Degradation): Degradation objects with specified parameters
+            (list of Degradation): Degradation objects with specified params
         """
         degradations = []
         for degradation_args in degradations_args:

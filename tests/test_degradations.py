@@ -5,7 +5,7 @@ import numpy as np
 import logging
 from audio_degrader import Degradation, DegradationUsageDocGenerator
 from audio_degrader import DegradationTrim, DegradedAudioFile
-from audio_degrader import DegradationMp3, DegradationGain
+from audio_degrader import DegradationMp3, DegradationGain, DegradationMix
 
 TEST_STEREO_WAV_PATH = './tests/test_files/test30s_44100_stereo_pcm16le.wav'
 TEST_MONO_WAV_PATH = './tests/test_files/test30s_44100_mono_pcm16le.wav'
@@ -75,6 +75,30 @@ class TestDegradationGain:
         self.daf.apply_degradation(degradation_gain)
         sum_after = np.sum(np.abs(self.daf.samples))
         assert (np.abs(sum_after / sum_before - 10**(value/20.0)) < 0.001)
+
+    def teardown_class(self):
+        shutil.rmtree(TMP_PATH)
+
+
+class TestDegradationMix:
+
+    def setup_class(self):
+        logging.basicConfig(level=logging.DEBUG)
+        if not os.path.isdir(TMP_PATH):
+            os.makedirs(TMP_PATH)
+        self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
+                                     TMP_PATH)
+        self.noise_path = './tests/test_files/helen.wav'
+
+    def test_degradation_mix(self):
+        degradation_mix = DegradationMix()
+        degradation_mix.set_parameters_values(
+            {'noise': self.noise_path,
+             'snr': -12})
+        self.daf.apply_degradation(degradation_mix)
+        target_y, _ = lr.core.load('./tests/test_files/target_degr_mix.wav',
+                                   sr=None, mono=False)
+        assert np.mean(np.abs(target_y - self.daf.samples)) < 0.0001
 
     def teardown_class(self):
         shutil.rmtree(TMP_PATH)
