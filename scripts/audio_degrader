@@ -4,11 +4,9 @@ import argparse
 import audio_degrader
 import logging
 from audio_degrader import ParametersParser
-from audio_degrader import DegradationTrim
-from audio_degrader import DegradationGain
-from audio_degrader import DegradationMp3
 from audio_degrader import DegradationUsageDocGenerator
 from audio_degrader import DegradedAudioFile
+from audio_degrader import ALL_DEGRADATIONS
 
 
 DEFAULT_TMP_DIR = "./audio_degrader_tmp"
@@ -19,22 +17,21 @@ def main(in_wav, tmp_dir, degradations_args, out_wav):
     logging.info("Parsing degradations list")
     degradations = ParametersParser.parse_degradations_args(degradations_args)
     for degradation in degradations:
-        logging.info("Applying {0} with parameters {1}".format(
-            degradation.name, degradation.parameters_values))
+        logging.info("Applying {0}".format(degradation.name))
+        try:
+            logging.info("    with parameters {0}".format(
+                degradation.parameters_values))
+        except:
+            logging.info("    without parameters")
         degraded_audio_file.apply_degradation(degradation)
     logging.info("Exporting to wav")
     degraded_audio_file.to_wav(out_wav)
 
 if __name__ == "__main__":
     main_description = "Process audio with a sequence of degradations:\n"
-    main_description += '\n'.join(sorted((  # sort alphabetically
-        DegradationUsageDocGenerator.get_degradation_help(
-            DegradationTrim),
-        DegradationUsageDocGenerator.get_degradation_help(
-            DegradationMp3),
-        DegradationUsageDocGenerator.get_degradation_help(
-            DegradationGain),
-        )))
+    main_description += '\n'.join(sorted(
+        [DegradationUsageDocGenerator.get_degradation_help(d) for d in
+         ALL_DEGRADATIONS.values()]))
     parser = argparse.ArgumentParser(
         description=main_description,
         formatter_class=argparse.RawTextHelpFormatter,

@@ -45,7 +45,10 @@ class DegradationUsageDocGenerator(object):
 
     @staticmethod
     def get_degradation_help_header(degradation):
-        help_str = "    {0}{1}".format(degradation.name, NAME_SEP)
+        help_str = "    {0}".format(degradation.name)
+        has_params = len(degradation.parameters_info) > 0
+        if has_params:
+            help_str += "{0}".format(NAME_SEP)
         help_str += PARAMETERS_SEP.join(
             map(lambda x: x[0], degradation.parameters_info))
         help_str += DESCRIPTION_SEP
@@ -66,9 +69,11 @@ class DegradationUsageDocGenerator(object):
         base_indent = DegradationUsageDocGenerator.base_indent
         indent = DegradationUsageDocGenerator.indent
         help_example_str = "\n{0}example:".format(base_indent)
-        help_example_str += "\n{0}{1}{2}".format(indent,
-                                                 degradation.name,
-                                                 NAME_SEP)
+        help_example_str += "\n{0}{1}".format(indent,
+                                              degradation.name)
+        has_params = len(degradation.parameters_info) > 0
+        if has_params:
+            help_example_str += "{0}".format(NAME_SEP)
         help_example_str += PARAMETERS_SEP.join(
             map(lambda x: "{0}".format(x[1]), degradation.parameters_info))
         return help_example_str
@@ -146,6 +151,10 @@ class DegradationGain(Degradation):
 
 class DegradationNormalization(Degradation):
 
+    name = "normalization"
+    description = "Normalize amplitude of audio to range [-1.0, 1.0]"
+    parameters_info = []
+
     def apply(self, degraded_audio_file):
         pass
 
@@ -190,3 +199,11 @@ class DegradationEqualization(Degradation):
 
     def apply(self, degraded_audio_file):
         pass
+
+
+ALL_DEGRADATIONS = {
+    DegradationTrim.name: DegradationTrim,
+    DegradationMp3.name: DegradationMp3,
+    DegradationGain.name: DegradationGain,
+    DegradationNormalization.name: DegradationNormalization
+}
