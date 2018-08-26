@@ -377,8 +377,24 @@ class DegradationDynamicRangeCompression(Degradation):
 
 class DegradationSpeed(Degradation):
 
+    name = "speed"
+    description = "Change playback speed"
+    parameters_info = [
+        ("speed",
+         "0.9",
+         "Playback speed factor")]
+
     def apply(self, degraded_audio_file):
-        pass
+        speed_factor = float(self.parameters_values['speed'])
+        x = degraded_audio_file.samples
+        y0 = lr.core.resample(x[0, :], degraded_audio_file.sample_rate,
+                              degraded_audio_file.sample_rate / speed_factor)
+        y1 = lr.core.resample(x[1, :], degraded_audio_file.sample_rate,
+                              degraded_audio_file.sample_rate / speed_factor)
+        y = np.zeros((2, len(y0)))
+        y[0, :] = y0
+        y[1, :] = y1
+        degraded_audio_file.samples = y
 
 
 class DegradationTimeStretching(Degradation):
@@ -406,5 +422,6 @@ ALL_DEGRADATIONS = {
     DegradationNormalization.name: DegradationNormalization,
     DegradationMix.name: DegradationMix,
     DegradationResample.name: DegradationResample,
-    DegradationConvolution.name: DegradationConvolution
+    DegradationConvolution.name: DegradationConvolution,
+    DegradationSpeed.name: DegradationSpeed
 }

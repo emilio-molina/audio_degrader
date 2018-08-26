@@ -7,6 +7,7 @@ from audio_degrader import Degradation, DegradationUsageDocGenerator
 from audio_degrader import DegradationTrim, DegradedAudioFile
 from audio_degrader import DegradationMp3, DegradationGain, DegradationMix
 from audio_degrader import DegradationResample, DegradationConvolution
+from audio_degrader import DegradationSpeed
 
 TEST_STEREO_WAV_PATH = './tests/test_files/test30s_44100_stereo_pcm16le.wav'
 TEST_MONO_WAV_PATH = './tests/test_files/test30s_44100_mono_pcm16le.wav'
@@ -148,6 +149,29 @@ class TestDegradationConvolution:
             './tests/test_files/target_degr_convolution.wav',
             sr=None, mono=False)
         assert self.daf.sample_rate == sr
+        assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
+
+    def teardown_class(self):
+        shutil.rmtree(TMP_PATH)
+
+
+class TestDegradationSpeed:
+
+    def setup_class(self):
+        logging.basicConfig(level=logging.DEBUG)
+        if not os.path.isdir(TMP_PATH):
+            os.makedirs(TMP_PATH)
+        self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
+                                     TMP_PATH)
+
+    def test_degradation_speed(self):
+        degradation_speed = DegradationSpeed()
+        degradation_speed.set_parameters_values(
+            {'speed': '0.9'})
+        self.daf.apply_degradation(degradation_speed)
+        target_y, _ = lr.core.load(
+            './tests/test_files/target_degr_speed.wav',
+            sr=None, mono=False)
         assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
 
     def teardown_class(self):
