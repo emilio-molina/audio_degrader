@@ -123,7 +123,7 @@ class TestDegradationResample:
             './tests/test_files/target_degr_resample.wav',
             sr=None, mono=False)
         assert self.daf.sample_rate == sr
-        assert np.mean(np.abs(target_y - self.daf.samples)) < 0.0001
+        assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
 
     def teardown_class(self):
         shutil.rmtree(TMP_PATH)
@@ -148,7 +148,7 @@ class TestDegradationConvolution:
             './tests/test_files/target_degr_convolution.wav',
             sr=None, mono=False)
         assert self.daf.sample_rate == sr
-        assert np.mean(np.abs(target_y - self.daf.samples)) < 0.0001
+        assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
 
     def teardown_class(self):
         shutil.rmtree(TMP_PATH)
