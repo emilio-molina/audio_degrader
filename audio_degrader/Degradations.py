@@ -5,6 +5,7 @@ import logging
 import numpy as np
 from scipy import signal
 import os
+import subprocess
 
 
 class Degradation(object):
@@ -371,8 +372,37 @@ class DegradationConvolution(Degradation):
 
 class DegradationDynamicRangeCompression(Degradation):
 
+    name = "dr_compression"
+    description = "Apply dynamic range compression"
+    parameters_info = [
+        ("degree",
+         "0",
+         "Degree of compression. Presets from 0 (soft) to 3 (hard)")]
+
     def apply(self, degraded_audio_file):
-        pass
+        extra_tmp_path = degraded_audio_file.tmp_path + '.extra.wav'
+        degree = int(self.parameters_values['degree'])
+        if degree == 1:
+            cmd = ("sox {0} {1} compand " +
+                   "0.01,0.20 -40,-10,-30 5")
+        elif degree == 2:
+            cmd = ("sox {0} {1} compand " +
+                   "0.01,0.20 -50,-50,-40,-30,-40,-10,-30 12")
+        elif degree == 3:
+            cmd = ("sox {0} {1} compand " +
+                   "0.01,0.1 -70,-60,-70,-30,-70,0,-70 45")
+        cmd = cmd.format(degraded_audio_file.tmp_path,
+                         extra_tmp_path)
+        logging.info(cmd)
+        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        if p.returncode != 0:
+            logging.error("Error running sox!")
+        y, sr = lr.core.load(extra_tmp_path, sr=None, mono=False)
+        os.remove(extra_tmp_path)
+        assert degraded_audio_file.sample_rate == sr
+        degraded_audio_file.samples = y
 
 
 class DegradationSpeed(Degradation):
@@ -464,5 +494,6 @@ ALL_DEGRADATIONS = {
     DegradationConvolution.name: DegradationConvolution,
     DegradationSpeed.name: DegradationSpeed,
     DegradationPitchShifting.name: DegradationPitchShifting,
-    DegradationTimeStretching.name: DegradationTimeStretching
+    DegradationTimeStretching.name: DegradationTimeStretching,
+    DegradationDynamicRangeCompression.name: DegradationDynamicRangeCompression
 }
