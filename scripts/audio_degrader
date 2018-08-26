@@ -2,44 +2,61 @@
 import os
 import argparse
 import audio_degrader
+import logging
+from audio_degrader import ParametersParser
+from audio_degrader import DegradationUsageDocGenerator
+from audio_degrader import DegradedAudioFile
+from audio_degrader import ALL_DEGRADATIONS
 
-EXAMPLE_STR = '    audio_degrader -i {0} -d {1} -o {2}'.format(
-    'input.wav',
-    ('gain,-15 ' +
-     'mix,"sounds/ambience-pub.wav"//12 ' +
-     'dr-compression,3 ' +
-     'mp3,1 ' +
-     'gain,15'),
-    'output.wav')
+
+DEFAULT_TMP_DIR = "./audio_degrader_tmp"
+
+def main(in_wav, tmp_dir, degradations_args, out_wav):
+    """ Apply sequence of degradations to in_wav and stores result in out_wav
+
+    Args:
+        in_wav (string): Path of input wav file (any format)
+        tmp_dir (string): Path of directory for temporary files
+        degradations_args (list of strings): List of degradations to be applied
+        out_wav (string): Path of output wav file (always stereo)
+    """
+    logging.info("Creating DegradedAudioFile object")
+    degraded_audio_file = DegradedAudioFile(in_wav, tmp_dir)
+    logging.info("Parsing degradations list: {0}".format(degradations_args))
+    degradations = ParametersParser.parse_degradations_args(degradations_args)
+    for degradation in degradations:
+        logging.info("Applying {0}".format(degradation.name))
+        try:
+            logging.info("    with parameters {0}".format(
+                degradation.parameters_values))
+        except:
+            logging.info("    without parameters")
+        degraded_audio_file.apply_degradation(degradation)
+    logging.info("Exporting to wav")
+    degraded_audio_file.to_wav(out_wav)
+    logging.info("Deleting temporary mirror file")
+    degraded_audio_file.delete_tmp_mirror_file()
 
 if __name__ == "__main__":
+    main_description = "Process audio with a sequence of degradations:\n"
+    main_description += '\n'.join(sorted(
+        [DegradationUsageDocGenerator.get_degradation_help(d) for d in
+         ALL_DEGRADATIONS.values()]))
     parser = argparse.ArgumentParser(
-        description="""Process audio with a sequence of degradations
-    Accepted degradadations:
-        start,time: Remove audio until start. Value in seconds.
-        mp3,quality: Mp3 compression. Value is quality (1-5)
-        gain,db: Gain. Value is dB (e.g. gain,-20.3).
-        normalize,percentage: Normalize. Percentage in 0.0-1.0 (1.0=full range)
-        mix,"sound_path"//snr: Mix with sound at a specified SNR.
-                               See --list-resources option.
-        impulse-response,"impulse_response_path"//level: Apply impulse response
-                                                         Level 0.0-1.0
-                               See --list-resources option.
-        dr-compression,degree: Dynamic range compression. Degree 1,2 or 3.
-        time-stretching,ratio: Apply time streting.
-        pitch-shifting,cents: Apply pitch shifting.
-        eq,freq_hz//bw_hz//gain_db: Apply equalization with sox.
-        """,
+        description=main_description,
         formatter_class=argparse.RawTextHelpFormatter,
-        epilog='\n'.join(["Note: all audios are transcoded to mono, pcm_s16le",
-                          "",
-                          "Example: ",
-                         EXAMPLE_STR]))
+        epilog=("For examples of degradations see " +
+                "https://github.com/EliosMolina/audio_degrader"))
 
     parser.add_argument('-i', '--input',
                         type=str,
                         help='Input audio wav')
-    parser.add_argument('-d', '--degradations', metavar='degradation,value',
+    parser.add_argument('-t', '--tmpdir',
+                        type=str,
+                        help=('Temporal directory. ' +
+                              'Default: {0}'.format(DEFAULT_TMP_DIR)),
+                        default=DEFAULT_TMP_DIR)
+    parser.add_argument('-d', '--degradations', metavar='degradation,params',
                         type=str,
                         nargs='*',
                         help='List of sequential degradations')
@@ -49,7 +66,19 @@ if __name__ == "__main__":
     parser.add_argument('-l', '--list-resources', action='store_true',
                         dest='list_resources',
                         help='List all available resources')
+    parser.add_argument('-v', '--verbosity_level', dest='verbosity_level',
+                        type=str,
+                        help=('Options: ERROR, WARNING, INFO, DEBUG. ' +
+                              'Default: WARNING'),
+                        default='WARNING')
     args = vars(parser.parse_args())
+    logging_levels = {'ERROR': logging.ERROR,
+                      'WARNING': logging.WARNING,
+                      'INFO': logging.INFO,
+                      'DEBUG': logging.DEBUG}
+    logging.basicConfig(level=logging_levels[args['verbosity_level']])
+
+
     if (not args['input'] or
         not args['output'] or
             not args['degradations']) and not args['list_resources']:
@@ -65,9 +94,9 @@ if __name__ == "__main__":
             for fname in fnames:
                 if os.path.splitext(fname)[1] == '.wav':
                     print "  " + os.path.join(rel_dir, fname)
-
         exit(0)
 
-    audio_degrader.main(args['input'],
-                        args['degradations'],
-                        args['output'])
+    main(args['input'],
+         args['tmpdir'],
+         args['degradations'],
+         args['output'])
