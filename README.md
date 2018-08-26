@@ -21,42 +21,91 @@ It is similar to the [Audio Degradation Toolbox in Matlab by Sebastian Ewert and
 The script `audio_degrader` is installed along with the python package.
 
 ```
-$ audio_degrader
-usage: audio_degrader [-h] [-i INPUT]
-                      [-d [degradation,value [degradation,value ...]]]
-                      [-o OUTPUT] [-l]
+$ audio_degrader --help
+usage: audio_degrader [-h] [-i INPUT] [-t TMPDIR]
+                      [-d [degradation,params [degradation,params ...]]]
+                      [-o OUTPUT] [-l] [-v VERBOSITY_LEVEL]
 
-Process audio with a sequence of degradations
-    Accepted degradadations:
-        start,time: Remove audio until start. Value in seconds.
-        mp3,quality: Mp3 compression. Value is quality (1-5)
-        gain,db: Gain. Value is dB (e.g. gain,-20.3).
-        normalize,percentage: Normalize. Percentage in 0.0-1.0 (1.0=full range)
-        mix,"sound_path"//snr: Mix with sound at a specified SNR.
-                               See --list-resources option.
-        impulse-response,"impulse_response_path"//level: Apply impulse response
-                                                         Level 0.0-1.0
-                               See --list-resources option.
-        dr-compression,degree: Dynamic range compression. Degree 1,2 or 3.
-        time-stretching,ratio: Apply time streting.
-        pitch-shifting,cents: Apply pitch shifting.
-        eq,freq_hz//bw_hz//gain_db: Apply equalization with sox.
-
+Process audio with a sequence of degradations:
+    convolution,impulse_response//level: Convolve input with specified impulse response
+        parameters:
+            impulse_response: Full or relative path (to resources dir) of impulse response
+            level: Wet level (0.0=dry, 1.0=wet)
+        example:
+            convolution,impulse_responses/ir_classroom.wav//1.0
+    dr_compression,degree: Apply dynamic range compression
+        parameters:
+            degree: Degree of compression. Presets from 0 (soft) to 3 (hard)
+        example:
+            dr_compression,0
+    equalize,central_freq//bandwidth//gain: Apply a two-pole peaking equalisation (EQ) filter
+        parameters:
+            central_freq: Central frequency of filter in Hz
+            bandwidth: Bandwith of filter in Hz
+            gain: Gain of filter in dBs
+        example:
+            equalize,100//50//-10
+    gain,value: Apply gain expressed in dBs
+        parameters:
+            value: Gain value [dB]
+        example:
+            gain,6
+    mix,noise//snr: Mix input with a specified noise. The noise can be specified with its full path or relative to the resources directory (see -l option)
+        parameters:
+            noise: Full or relative path (to resources dir) of noise
+            snr: Desired Signal-to-Noise-Ratio [dB]
+        example:
+            mix,sounds/ambience-pub.wav//6
+    mp3,bitrate: Emulate mp3 transcoding
+        parameters:
+            bitrate: Quality [bps]
+        example:
+            mp3,320k
+    normalization: Normalize amplitude of audio to range [-1.0, 1.0]
+        parameters:
+        example:
+            normalization
+    pitch_shift,pitch_shift_factor: Apply pitch shifting
+        parameters:
+            pitch_shift_factor: Pitch shift factor
+        example:
+            pitch_shift,0.9
+    resample,sample_rate: Resample to given sample rate
+        parameters:
+            sample_rate: Desired sample rate [Hz]
+        example:
+            resample,8000
+    speed,speed: Change playback speed
+        parameters:
+            speed: Playback speed factor
+        example:
+            speed,0.9
+    time_stretch,time_stretch_factor: Apply time stretching
+        parameters:
+            time_stretch_factor: Time stretch factor
+        example:
+            time_stretch,0.9
+    trim_from,start_time: Trim audio from a given start time
+        parameters:
+            start_time: Trim start [seconds]
+        example:
+            trim_from,0.1
 
 optional arguments:
   -h, --help            show this help message and exit
   -i INPUT, --input INPUT
                         Input audio wav
-  -d [degradation,value [degradation,value ...]], --degradations [degradation,value [degradation,value ...]]
+  -t TMPDIR, --tmpdir TMPDIR
+                        Temporal directory. Default: ./audio_degrader_tmp
+  -d [degradation,params [degradation,params ...]], --degradations [degradation,params [degradation,params ...]]
                         List of sequential degradations
   -o OUTPUT, --output OUTPUT
                         Output audio wav
   -l, --list-resources  List all available resources
+  -v VERBOSITY_LEVEL, --verbosity_level VERBOSITY_LEVEL
+                        Options: ERROR, WARNING, INFO, DEBUG. Default: WARNING
 
-Note: all audios are transcoded to mono, pcm_s16le
-
-Example:
-    audio_degrader -i input.wav -d gain,-15 mix,"sounds/ambience-pub.wav"//12 dr-compression,3 mp3,1 gain,15 -o output.wav
+For examples of degradations see https://github.com/EliosMolina/audio_degrader
 ```
 
 In addition, a set of sounds and impulse reponses are also installed along with the package:
@@ -65,8 +114,8 @@ In addition, a set of sounds and impulse reponses are also installed along with 
 $ audio_degrader -l
 Available resources
 Directory: /Users/emiliomolina/git/audio_degrader/audio_degrader/resources
-  impulse_responses/ir_classroom.wav
-  impulse_responses/ir_smartphone_mic.wav
+  impulse_responses/ir_classroom_mono.wav
+  impulse_responses/ir_smartphone_mic_mono.wav
   sounds/ambience-pub.wav
   sounds/applause.wav
   sounds/brown-noise.wav
@@ -83,7 +132,7 @@ Directory: /Users/emiliomolina/git/audio_degrader/audio_degrader/resources
 ```
 # Microphone recording style
 
-$ audio_degrader -i input.wav -d gain,-15 mix,"sounds/ambience-pub.wav"//18 impulse-response,"impulse_responses/ir_smartphone_mic.wav"//0.8 dr-compression,2 eq,50//100//-6 gain,6 -o out.wav
+$ audio_degrader -i input.wav -d gain,-15 mix,sounds/ambience-pub.wav//18 convolution,impulse_responses/ir_smartphone_mic_mono.wav//0.8 dr_compression,2 equalize,50//100//-6 normalization -o out.wav
 ```
 
 
