@@ -8,6 +8,7 @@ from audio_degrader import DegradationTrim, DegradedAudioFile
 from audio_degrader import DegradationMp3, DegradationGain, DegradationMix
 from audio_degrader import DegradationResample, DegradationConvolution
 from audio_degrader import DegradationSpeed, DegradationPitchShifting
+from audio_degrader import DegradationTimeStretching
 
 TEST_STEREO_WAV_PATH = './tests/test_files/test30s_44100_stereo_pcm16le.wav'
 TEST_MONO_WAV_PATH = './tests/test_files/test30s_44100_mono_pcm16le.wav'
@@ -194,6 +195,29 @@ class TestDegradationPitchShifting:
         self.daf.apply_degradation(degradation_pitch_shifting)
         target_y, _ = lr.core.load(
             './tests/test_files/target_degr_pitchshift.wav',
+            sr=None, mono=False)
+        assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
+
+    def teardown_class(self):
+        shutil.rmtree(TMP_PATH)
+
+
+class TestDegradationTimeStretching:
+
+    def setup_class(self):
+        logging.basicConfig(level=logging.DEBUG)
+        if not os.path.isdir(TMP_PATH):
+            os.makedirs(TMP_PATH)
+        self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
+                                     TMP_PATH)
+
+    def test_degradation_time_stretching(self):
+        degradation_time_stretching = DegradationTimeStretching()
+        degradation_time_stretching.set_parameters_values(
+            {'time_stretch_factor': '0.9'})
+        self.daf.apply_degradation(degradation_time_stretching)
+        target_y, _ = lr.core.load(
+            './tests/test_files/target_degr_timestretch.wav',
             sr=None, mono=False)
         assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
 
