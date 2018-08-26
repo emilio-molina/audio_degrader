@@ -11,6 +11,7 @@ from Degradations import DegradationSpeed
 from Degradations import DegradationTimeStretching
 from Degradations import DegradationPitchShifting
 from Degradations import DegradationResample
+from Degradations import DegradationEqualization
 from Degradations import ALL_DEGRADATIONS
 from ParametersParser import ParametersParser
 
@@ -29,5 +30,6 @@ __all__ = ["DegradedAudioFile",
            "DegradationTimeStretching",
            "DegradationPitchShifting",
            "DegradationResample",
+           "DegradationEqualization",
            "ALL_DEGRADATIONS",
            "ParametersParser"]

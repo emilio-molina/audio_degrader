@@ -10,6 +10,7 @@ from audio_degrader import DegradationResample, DegradationConvolution
 from audio_degrader import DegradationSpeed, DegradationPitchShifting
 from audio_degrader import DegradationTimeStretching
 from audio_degrader import DegradationDynamicRangeCompression
+from audio_degrader import DegradationEqualization
 
 TEST_STEREO_WAV_PATH = './tests/test_files/test30s_44100_stereo_pcm16le.wav'
 TEST_MONO_WAV_PATH = './tests/test_files/test30s_44100_mono_pcm16le.wav'
@@ -242,6 +243,31 @@ class TestDegradationDynamicRangeCompression:
         self.daf.apply_degradation(degradation_drcompression)
         target_y, _ = lr.core.load(
             './tests/test_files/target_degr_drcompression.wav',
+            sr=None, mono=False)
+        assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
+
+    def teardown_class(self):
+        shutil.rmtree(TMP_PATH)
+
+
+class TestDegradationEqualization:
+
+    def setup_class(self):
+        logging.basicConfig(level=logging.DEBUG)
+        if not os.path.isdir(TMP_PATH):
+            os.makedirs(TMP_PATH)
+        self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
+                                     TMP_PATH)
+
+    def test_degradation_equalization(self):
+        degradation_equalization = DegradationEqualization()
+        degradation_equalization.set_parameters_values(
+            {'central_freq': '100',
+             'bandwidth': '50',
+             'gain': '-20'})
+        self.daf.apply_degradation(degradation_equalization)
+        target_y, _ = lr.core.load(
+            './tests/test_files/target_degr_equalize.wav',
             sr=None, mono=False)
         assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
 
