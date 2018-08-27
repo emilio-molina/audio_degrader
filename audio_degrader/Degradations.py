@@ -175,7 +175,7 @@ class DegradationMp3(Degradation):
             degraded_audio_file.tmp_path, bitrate, tmp_mp3_path))
         logging.debug(out)
         logging.debug(err)
-        out, err = run("ffmpeg -y -i {0} -ac 2 -acodec pcm_s32le {1}".format(
+        out, err = run("ffmpeg -y -i {0} -ac 2 -acodec pcm_f32le {1}".format(
             tmp_mp3_path, tmp_wav_path))
         logging.debug(out)
         logging.debug(err)
