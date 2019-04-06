@@ -231,7 +231,7 @@ class DegradationMix(Degradation):
                         "Desired Signal-to-Noise-Ratio [dB]")]
 
     def read_noise(self, noise_path, degraded_audio_file):
-        """ Read samples of noise resampled at specified sample_rate
+        """ Read samples of noise resampled at the sample_rate of input
 
         Args:
             degraded_audio_file (DegradedAudioFile): Input DegradedAudioFile

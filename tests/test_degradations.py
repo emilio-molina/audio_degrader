@@ -86,6 +86,8 @@ class TestDegradationGain:
 
 
 class TestDegradationMix:
+    """ Test DegradationMix with stereo files with different sample rates
+    """
 
     def setup_class(self):
         logging.basicConfig(level=logging.DEBUG)
@@ -93,17 +95,17 @@ class TestDegradationMix:
             os.makedirs(TMP_PATH)
         self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
                                      TMP_PATH)
-        self.noise_path = './tests/test_files/helen.wav'
+        self.noise_path = './tests/test_files/applause.wav'
 
     def test_degradation_mix(self):
         degradation_mix = DegradationMix()
         degradation_mix.set_parameters_values(
             {'noise': self.noise_path,
-             'snr': -12})
+             'snr': -3})
         self.daf.apply_degradation(degradation_mix)
         target_y, _ = lr.core.load('./tests/test_files/target_degr_mix.wav',
                                    sr=None, mono=False)
-        assert np.mean(np.abs(target_y - self.daf.samples)) < 0.0001
+        assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
 
     def teardown_class(self):
         shutil.rmtree(TMP_PATH)

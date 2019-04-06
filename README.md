@@ -130,6 +130,11 @@ Directory: /Users/emiliomolina/git/audio_degrader/audio_degrader/resources
 ## Examples
 
 ```
+# Mix input sound with a sound / noise
+# note: sounds/applause.wav is relative path with respect to installed
+# resources files. A full absolute path can be also used.
+$ audio_degrader -i input.wav -d mix,sounds/applause.wav//-3 -o out.wav
+
 # Microphone recording style
 
 $ audio_degrader -i input.wav -d gain,-15 mix,sounds/ambience-pub.wav//18 convolution,impulse_responses/ir_smartphone_mic_mono.wav//0.8 dr_compression,2 equalize,50//100//-6 normalization -o out.wav
