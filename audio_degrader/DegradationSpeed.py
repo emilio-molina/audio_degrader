@@ -23,6 +23,8 @@ class DegradationSpeed(Degradation):
             degraded_audio_file.tmp_path,
             int(degraded_audio_file.sample_rate / speed_factor),
             extra_tmp_path))
+        logging.debug(out)
+        logging.debug(err)
         y, sr = lr.core.load(extra_tmp_path, sr=None, mono=False)
         os.remove(extra_tmp_path)
         degraded_audio_file.samples = y

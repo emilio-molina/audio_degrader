@@ -2,6 +2,7 @@ import os
 import librosa as lr
 import logging
 import numpy as np
+from utils import run
 from BaseDegradation import Degradation
 
 
@@ -27,7 +28,17 @@ class DegradationMix(Degradation):
             (np.array): Samples of noise with shape (2, nsamples)
         """
         sample_rate = degraded_audio_file.sample_rate
-        aux_x_noise, _ = lr.core.load(noise_path, sr=sample_rate, mono=False)
+        extra_tmp_path = degraded_audio_file.tmp_path + '.extra.wav'
+        cmd = "ffmpeg -y -i {0} -ar {1} -ac 2 -acodec pcm_f32le {2}".format(
+                noise_path,
+                sample_rate,
+                extra_tmp_path)
+        out, err, returncode = run(cmd)
+        logging.debug(out)
+        logging.debug(err)
+        aux_x_noise, sr = lr.core.load(extra_tmp_path, sr=None, mono=False)
+        assert sr == sample_rate
+        os.remove(extra_tmp_path)
         if len(aux_x_noise.shape) == 1:
             noise_samples = np.zeros((2, len(aux_x_noise)))
             noise_samples[0, :] = aux_x_noise

@@ -3,6 +3,7 @@ import logging
 import numpy as np
 from scipy import signal
 import os
+from utils import run
 from BaseDegradation import Degradation
 
 
@@ -36,7 +37,16 @@ class DegradationConvolution(Degradation):
         level = float(self.parameters_values['level'])
         logging.info('Convolving with %s and level %f' % (ir_path, level))
         x = degraded_audio_file.samples
-        ir_x, sr_x = lr.core.load(ir_path, sr=None, mono=False)
+        extra_tmp_path = degraded_audio_file.tmp_path + '.extra.wav'
+        cmd = "ffmpeg -y -i {0} -ar {1} -ac 2 -acodec pcm_f32le {2}".format(
+                ir_path,
+                degraded_audio_file.sample_rate,
+                extra_tmp_path)
+        out, err, returncode = run(cmd)
+        logging.debug(out)
+        logging.debug(err)
+        ir_x, sr_x = lr.core.load(extra_tmp_path, sr=None, mono=False)
+        os.remove(extra_tmp_path)
         logging.info('Converting IR sample rate from {0}Hz to {1}Hz'.format(
             sr_x, degraded_audio_file.sample_rate))
         y_wet = np.zeros(x.shape)
