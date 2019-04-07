@@ -4,7 +4,7 @@ import librosa as lr
 import numpy as np
 import logging
 from audio_degrader import Degradation, DegradationUsageDocGenerator
-from audio_degrader import DegradationTrim, DegradedAudioFile
+from audio_degrader import DegradationTrim, AudioFile
 from audio_degrader import DegradationMp3, DegradationGain, DegradationMix
 from audio_degrader import DegradationResample, DegradationConvolution
 from audio_degrader import DegradationSpeed, DegradationPitchShifting
@@ -24,8 +24,8 @@ class TestDegradationTrim:
         logging.basicConfig(level=logging.DEBUG)
         if not os.path.isdir(TMP_PATH):
             os.makedirs(TMP_PATH)
-        self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
-                                     TMP_PATH)
+        self.daf = AudioFile(TEST_STEREO_WAV_PATH,
+                             TMP_PATH)
 
     def test_degradation_trim(self):
         samples, sample_rate = lr.core.load(self.daf.tmp_path,
@@ -50,8 +50,8 @@ class TestDegradationMp3:
         logging.basicConfig(level=logging.DEBUG)
         if not os.path.isdir(TMP_PATH):
             os.makedirs(TMP_PATH)
-        self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
-                                     TMP_PATH)
+        self.daf = AudioFile(TEST_STEREO_WAV_PATH,
+                             TMP_PATH)
 
     def test_degradation_mp3(self):
         degradation_mp3 = DegradationMp3()
@@ -69,8 +69,8 @@ class TestDegradationGain:
         logging.basicConfig(level=logging.DEBUG)
         if not os.path.isdir(TMP_PATH):
             os.makedirs(TMP_PATH)
-        self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
-                                     TMP_PATH)
+        self.daf = AudioFile(TEST_STEREO_WAV_PATH,
+                             TMP_PATH)
 
     def test_degradation_gain(self):
         degradation_gain = DegradationGain()
@@ -93,8 +93,8 @@ class TestDegradationMix:
         logging.basicConfig(level=logging.DEBUG)
         if not os.path.isdir(TMP_PATH):
             os.makedirs(TMP_PATH)
-        self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
-                                     TMP_PATH)
+        self.daf = AudioFile(TEST_STEREO_WAV_PATH,
+                             TMP_PATH)
 
     def test_degradation_mix(self):
         degradation_mix = DegradationMix()
@@ -116,8 +116,8 @@ class TestDegradationResample:
         logging.basicConfig(level=logging.DEBUG)
         if not os.path.isdir(TMP_PATH):
             os.makedirs(TMP_PATH)
-        self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
-                                     TMP_PATH)
+        self.daf = AudioFile(TEST_STEREO_WAV_PATH,
+                             TMP_PATH)
 
     def test_degradation_resample(self):
         degradation_resample = DegradationResample()
@@ -140,8 +140,8 @@ class TestDegradationConvolution:
         logging.basicConfig(level=logging.DEBUG)
         if not os.path.isdir(TMP_PATH):
             os.makedirs(TMP_PATH)
-        self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
-                                     TMP_PATH)
+        self.daf = AudioFile(TEST_STEREO_WAV_PATH,
+                             TMP_PATH)
 
     def test_degradation_convolution(self):
         degradation_convolution = DegradationConvolution()
@@ -165,8 +165,8 @@ class TestDegradationSpeed:
         logging.basicConfig(level=logging.DEBUG)
         if not os.path.isdir(TMP_PATH):
             os.makedirs(TMP_PATH)
-        self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
-                                     TMP_PATH)
+        self.daf = AudioFile(TEST_STEREO_WAV_PATH,
+                             TMP_PATH)
 
     def test_degradation_speed(self):
         degradation_speed = DegradationSpeed()
@@ -188,8 +188,8 @@ class TestDegradationPitchShifting:
         logging.basicConfig(level=logging.DEBUG)
         if not os.path.isdir(TMP_PATH):
             os.makedirs(TMP_PATH)
-        self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
-                                     TMP_PATH)
+        self.daf = AudioFile(TEST_STEREO_WAV_PATH,
+                             TMP_PATH)
 
     def test_degradation_pitch_shifting(self):
         degradation_pitch_shifting = DegradationPitchShifting()
@@ -211,8 +211,8 @@ class TestDegradationTimeStretching:
         logging.basicConfig(level=logging.DEBUG)
         if not os.path.isdir(TMP_PATH):
             os.makedirs(TMP_PATH)
-        self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
-                                     TMP_PATH)
+        self.daf = AudioFile(TEST_STEREO_WAV_PATH,
+                             TMP_PATH)
 
     def test_degradation_time_stretching(self):
         degradation_time_stretching = DegradationTimeStretching()
@@ -234,8 +234,8 @@ class TestDegradationDynamicRangeCompression:
         logging.basicConfig(level=logging.DEBUG)
         if not os.path.isdir(TMP_PATH):
             os.makedirs(TMP_PATH)
-        self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
-                                     TMP_PATH)
+        self.daf = AudioFile(TEST_STEREO_WAV_PATH,
+                             TMP_PATH)
 
     def test_degradation_dynamic_range_compression(self):
         degradation_drcompression = DegradationDynamicRangeCompression()
@@ -257,8 +257,8 @@ class TestDegradationEqualization:
         logging.basicConfig(level=logging.DEBUG)
         if not os.path.isdir(TMP_PATH):
             os.makedirs(TMP_PATH)
-        self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
-                                     TMP_PATH)
+        self.daf = AudioFile(TEST_STEREO_WAV_PATH,
+                             TMP_PATH)
 
     def test_degradation_equalization(self):
         degradation_equalization = DegradationEqualization()

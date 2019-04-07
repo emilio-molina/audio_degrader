@@ -25,11 +25,11 @@ class Degradation(object):
         self.parameters_values = parameters_values
 
     @abstractmethod
-    def apply(self, degraded_audio_file):
-        """ Process degraded_audio_file.samples field
+    def apply(self, audio_file):
+        """ Process audio_file.samples field
 
         Args:
-            degraded_audio_file (DegradedAudioFile): Audio file to be processed
+            audio_file (g): Audio file to be processed
         """
         pass
 

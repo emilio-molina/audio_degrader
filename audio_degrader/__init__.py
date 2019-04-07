@@ -1,4 +1,4 @@
-from DegradedAudioFile import DegradedAudioFile
+from AudioFile import AudioFile
 from BaseDegradation import Degradation, DegradationUsageDocGenerator
 from DegradationConvolution import DegradationConvolution
 from DegradationDynamicRangeCompression import \
@@ -17,7 +17,7 @@ from ParametersParser import ParametersParser
 from AllDegradations import ALL_DEGRADATIONS
 
 
-__all__ = ["DegradedAudioFile",
+__all__ = ["AudioFile",
            "Degradation",
            "DegradationUsageDocGenerator",
            "DegradationTrim",

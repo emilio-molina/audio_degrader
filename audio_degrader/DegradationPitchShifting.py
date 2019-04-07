@@ -15,20 +15,20 @@ class DegradationPitchShifting(Degradation):
          "0.9",
          "Pitch shift factor")]
 
-    def apply(self, degraded_audio_file):
+    def apply(self, audio_file):
         pitch_shift_factor = float(
             self.parameters_values["pitch_shift_factor"])
         n_semitones = 12 * np.log2(pitch_shift_factor)
         logging.info('Shifting pitch with factor %f, i.e. %f semitones' %
                      (pitch_shift_factor, n_semitones))
-        extra_tmp_path = degraded_audio_file.tmp_path + '.extra.wav'
+        extra_tmp_path = audio_file.tmp_path + '.extra.wav'
         cmd = "rubberband {0} -f {1} --no-threads {2}"
         out, err, returncode = run(cmd.format(
-            degraded_audio_file.tmp_path,
+            audio_file.tmp_path,
             pitch_shift_factor,
             extra_tmp_path))
         logging.debug(out)
         logging.debug(err)
         y, sr = lr.core.load(extra_tmp_path, sr=None, mono=False)
         os.remove(extra_tmp_path)
-        degraded_audio_file.samples = y
+        audio_file.samples = y

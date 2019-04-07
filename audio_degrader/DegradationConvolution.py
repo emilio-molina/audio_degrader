@@ -34,15 +34,15 @@ class DegradationConvolution(Degradation):
         else:
             return ir_path
 
-    def apply(self, degraded_audio_file):
+    def apply(self, audio_file):
         ir_path = self.get_actual_impulse_response_path()
         level = float(self.parameters_values['level'])
         logging.info('Convolving with %s and level %f' % (ir_path, level))
-        x = degraded_audio_file.samples
-        extra_tmp_path = degraded_audio_file.tmp_path + '.extra.wav'
+        x = audio_file.samples
+        extra_tmp_path = audio_file.tmp_path + '.extra.wav'
         cmd = "ffmpeg -y -i {0} -ar {1} -ac 2 -acodec pcm_f32le {2}".format(
                 ir_path,
-                degraded_audio_file.sample_rate,
+                audio_file.sample_rate,
                 extra_tmp_path)
         out, err, returncode = run(cmd)
         logging.debug(out)
@@ -50,13 +50,13 @@ class DegradationConvolution(Degradation):
         ir_x, sr_x = lr.core.load(extra_tmp_path, sr=None, mono=False)
         os.remove(extra_tmp_path)
         logging.info('Converting IR sample rate from {0}Hz to {1}Hz'.format(
-            sr_x, degraded_audio_file.sample_rate))
+            sr_x, audio_file.sample_rate))
         y_wet = np.zeros(x.shape)
         for channel in [0, 1]:
             sampled_ir_x = lr.core.resample(ir_x[channel, :],
                                             sr_x,
-                                            degraded_audio_file.sample_rate)
+                                            audio_file.sample_rate)
             y_wet[channel, :] = signal.fftconvolve(
                 x[channel, :], sampled_ir_x, mode='full')[0:x.shape[1]]
         y = y_wet * level + x * (1 - level)
-        degraded_audio_file.samples = y
+        audio_file.samples = y

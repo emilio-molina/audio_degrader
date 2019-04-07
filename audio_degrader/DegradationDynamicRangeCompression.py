@@ -14,8 +14,8 @@ class DegradationDynamicRangeCompression(Degradation):
          "0",
          "Degree of compression. Presets from 0 (soft) to 3 (hard)")]
 
-    def apply(self, degraded_audio_file):
-        extra_tmp_path = degraded_audio_file.tmp_path + '.extra.wav'
+    def apply(self, audio_file):
+        extra_tmp_path = audio_file.tmp_path + '.extra.wav'
         degree = int(self.parameters_values['degree'])
         if degree == 1:
             cmd = ("sox {0} {1} compand " +
@@ -26,7 +26,7 @@ class DegradationDynamicRangeCompression(Degradation):
         elif degree == 3:
             cmd = ("sox {0} {1} compand " +
                    "0.01,0.1 -70,-60,-70,-30,-70,0,-70 45")
-        cmd = cmd.format(degraded_audio_file.tmp_path,
+        cmd = cmd.format(audio_file.tmp_path,
                          extra_tmp_path)
         logging.info(cmd)
         out, err, returncode = run(cmd)
@@ -36,5 +36,5 @@ class DegradationDynamicRangeCompression(Degradation):
             logging.error("Error running sox!")
         y, sr = lr.core.load(extra_tmp_path, sr=None, mono=False)
         os.remove(extra_tmp_path)
-        assert degraded_audio_file.sample_rate == sr
-        degraded_audio_file.samples = y
+        assert audio_file.sample_rate == sr
+        audio_file.samples = y

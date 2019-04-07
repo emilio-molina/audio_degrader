@@ -5,7 +5,7 @@ import audio_degrader
 import logging
 from audio_degrader import ParametersParser
 from audio_degrader import DegradationUsageDocGenerator
-from audio_degrader import DegradedAudioFile
+from audio_degrader import AudioFile
 from audio_degrader import ALL_DEGRADATIONS
 
 
@@ -20,8 +20,8 @@ def main(in_wav, tmp_dir, degradations_args, out_wav):
         degradations_args (list of strings): List of degradations to be applied
         out_wav (string): Path of output wav file (always stereo)
     """
-    logging.info("Creating DegradedAudioFile object")
-    degraded_audio_file = DegradedAudioFile(in_wav, tmp_dir)
+    logging.info("Creating AudioFile object")
+    audio_file = AudioFile(in_wav, tmp_dir)
     logging.info("Parsing degradations list: {0}".format(degradations_args))
     degradations = ParametersParser.parse_degradations_args(degradations_args)
     for degradation in degradations:
@@ -31,11 +31,11 @@ def main(in_wav, tmp_dir, degradations_args, out_wav):
                 degradation.parameters_values))
         except:
             logging.info("    without parameters")
-        degraded_audio_file.apply_degradation(degradation)
+        audio_file.apply_degradation(degradation)
     logging.info("Exporting to wav")
-    degraded_audio_file.to_wav(out_wav)
+    audio_file.to_wav(out_wav)
     logging.info("Deleting temporary mirror file")
-    degraded_audio_file.delete_tmp_mirror_file()
+    audio_file.delete_tmp_mirror_file()
 
 if __name__ == "__main__":
     main_description = "Process audio with a sequence of degradations:\n"

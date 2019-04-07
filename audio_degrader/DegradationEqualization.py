@@ -20,14 +20,14 @@ class DegradationEqualization(Degradation):
          "-10",
          "Gain of filter in dBs")]
 
-    def apply(self, degraded_audio_file):
+    def apply(self, audio_file):
         freq = float(self.parameters_values['central_freq'])
         bw = float(self.parameters_values['bandwidth'])
         gain = float(self.parameters_values['gain'])
         logging.info("Equalizing. f=%f, bw=%f, gain=%f" % (freq, bw, gain))
-        extra_tmp_path = degraded_audio_file.tmp_path + '.extra.wav'
+        extra_tmp_path = audio_file.tmp_path + '.extra.wav'
         cmd = "sox {0} {1} equalizer {2} {3} {4}".format(
-            degraded_audio_file.tmp_path,
+            audio_file.tmp_path,
             extra_tmp_path,
             freq,
             bw,
@@ -40,5 +40,5 @@ class DegradationEqualization(Degradation):
             logging.error("Error running sox!")
         y, sr = lr.core.load(extra_tmp_path, sr=None, mono=None)
         os.remove(extra_tmp_path)
-        assert degraded_audio_file.sample_rate == sr
-        degraded_audio_file.samples = y
+        assert audio_file.sample_rate == sr
+        audio_file.samples = y
