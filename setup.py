@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='audio_degrader',
     packages=['audio_degrader'],
-    version='1.2.1',
+    version='1.2.2',
     description='Tool to introduce controlled degradations to audio',
     author='Emilio Molina',
     author_email='emilio.mol.mar@gmail.com',
