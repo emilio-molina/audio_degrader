@@ -264,9 +264,9 @@ class TestDegradationEqualization:
     def test_degradation_equalization(self):
         degradation_equalization = DegradationEqualization()
         degradation_equalization.set_parameters_values(
-            {'central_freq': '100',
-             'bandwidth': '50',
-             'gain': '-20'})
+            {'central_freq': '800',
+             'bandwidth': '10',
+             'gain': '20'})
         self.daf.apply_degradation(degradation_equalization)
         target_y, _ = lr.core.load(
             './tests/test_files/target_degr_equalize.wav',

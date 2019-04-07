@@ -61,10 +61,10 @@ Process audio with a sequence of degradations:
             bitrate: Quality [bps]
         example:
             mp3,320k
-    normalization: Normalize amplitude of audio to range [-1.0, 1.0]
+    normalize: Normalize amplitude of audio to range [-1.0, 1.0]
         parameters:
         example:
-            normalization
+            normalize
     pitch_shift,pitch_shift_factor: Apply pitch shifting
         parameters:
             pitch_shift_factor: Pitch shift factor
@@ -133,11 +133,22 @@ Directory: /Users/emiliomolina/git/audio_degrader/audio_degrader/resources
 # Mix input sound with a sound / noise
 # note: sounds/applause.wav is relative path with respect to installed
 # resources files. A full absolute path can be also used.
+
 $ audio_degrader -i input.wav -d mix,sounds/applause.wav//-3 -o out.wav
+
 
 # Microphone recording style
 
-$ audio_degrader -i input.wav -d gain,-15 mix,sounds/ambience-pub.wav//18 convolution,impulse_responses/ir_smartphone_mic_mono.wav//0.8 dr_compression,2 equalize,50//100//-6 normalization -o out.wav
+$ audio_degrader -i input.wav -d gain,-15 mix,sounds/ambience-pub.wav//18 convolution,impulse_responses/ir_smartphone_mic_mono.wav//0.8 dr_compression,2 equalize,50//100//-6 normalize -o out.wav
+
+
+# Resample and normalize
+$ audio_degrader -i input.wav -d resample,8000 normalize -o out.wav
+
+
+# Convolution
+# note: impulse_responses/ir_classroom_mono.wav is relative to the installed resources files
+$ audio_degrader -i input.wav -d convolution,impulse_responses/ir_classroom_mono.wav//0.7 -o out.wav
 ```
 
 

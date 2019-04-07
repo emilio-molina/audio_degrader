@@ -5,7 +5,7 @@ from BaseDegradation import Degradation
 
 class DegradationNormalization(Degradation):
 
-    name = "normalization"
+    name = "normalize"
     description = "Normalize amplitude of audio to range [-1.0, 1.0]"
     parameters_info = []
 
