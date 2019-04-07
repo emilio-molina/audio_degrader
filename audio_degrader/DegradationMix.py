@@ -76,7 +76,7 @@ class DegradationMix(Degradation):
         noise_path = self.parameters_values['noise']
         noise_path_resource = os.path.join(resources_dir, noise_path)
         if (not os.path.isfile(noise_path)
-            and os.path.isfile(noise_path_resource)):
+                and os.path.isfile(noise_path_resource)):
             return noise_path_resource
         else:
             return noise_path

@@ -30,7 +30,7 @@ class DegradationConvolution(Degradation):
         ir_path = self.parameters_values['impulse_response']
         ir_path_resource = os.path.join(resources_dir, ir_path)
         if not os.path.isfile(ir_path) and os.path.isfile(ir_path_resource):
-            return ir_path_candidate
+            return ir_path_resource
         else:
             return ir_path
 
