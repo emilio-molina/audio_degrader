@@ -7,7 +7,7 @@ This tool allows to introduce controlled degradations to audio.
 
 `pip install audio_degrader`
 
-The program depends on `sox` and `ffmpeg`, so you might need to install them as well.
+The program depends on `sox` and `ffmpeg`, so you might need to install them as well. Recommended `brew` in OSX and `apt-get` in linux.
 
 ## Applications
 * Evaluate Music Information Retrieval systems under different degrees of degradations
@@ -149,6 +149,21 @@ $ audio_degrader -i input.wav -d resample,8000 normalize -o out.wav
 # Convolution
 # note: impulse_responses/ir_classroom_mono.wav is relative to the installed resources files
 $ audio_degrader -i input.wav -d convolution,impulse_responses/ir_classroom_mono.wav//0.7 -o out.wav
+```
+
+## Audio format
+
+### Input
+`audio_degrader` relies on ffmpeg for audio reading, so it can read any format (even video).
+
+### Output
+`audio_degrader` output format is always wav stereo pcm_f32le (sample rate from original audio file).
+
+In order to convert this output wav file into another format, it can be easily done with ffmpeg. e.g.:
+```
+$ ffmpeg -i out.wav -b:a 320k out.mp3
+$ ffmpeg -i out.wav -ac 2 -ar 44100 -acodec pcm_s16le out_formatted.wav
+
 ```
 
 

@@ -41,16 +41,8 @@ class DegradedAudioFile(object):
 
     def to_wav(self, output_path):
         out, err, returncode = run(
-                "ffmpeg -y -i {0} {1}".format(self.tmp_path,
-                                              output_path))
-        logging.debug(out)
-        logging.debug(err)
-
-    def to_mp3(self, output_path, bitrate='320k'):
-        out, err, returncode = run(
-                "ffmpeg -y -i {0} -b:a {1} {2}".format(self.tmp_path,
-                                                       bitrate,
-                                                       output_path))
+                "ffmpeg -y -i {0} -ac 2 -acodec pcm_f32le {1}".format(
+                    self.tmp_path, output_path))
         logging.debug(out)
         logging.debug(err)
 

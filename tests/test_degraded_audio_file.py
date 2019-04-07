@@ -61,13 +61,6 @@ class TestDegradedAudioFile:
             assert(np.sum(np.abs(samples - daf.samples)) == 0.0)
             os.remove(out_path)
 
-    def test_to_mp3(self):
-        for daf in self.dafs:
-            out_path = os.path.join(TMP_PATH, 'out.mp3')
-            daf.to_mp3(out_path)
-            assert os.path.isfile(out_path)
-            os.remove(out_path)
-
     def test_deletion_tmp_file(self):
         for daf in self.dafs:
             daf.delete_tmp_mirror_file()
