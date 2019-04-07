@@ -7,7 +7,7 @@ This tool allows to introduce controlled degradations to audio.
 
 `pip install audio_degrader`
 
-The program depends on `sox`, `ffmpeg` and `rubberband`, so you might need to install them as well. Recommended `brew` in OSX and `apt-get` in linux.
+The program depends on `sox`, `ffmpeg` and `rubberband`, so you might need to install them as well. Recommended `brew` in OSX and `apt-get` in linux (for rubberband, in linux use rubberband-cli).
 
 ## Applications
 * Evaluate Music Information Retrieval systems under different degrees of degradations
