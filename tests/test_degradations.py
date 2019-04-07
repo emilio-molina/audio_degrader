@@ -289,12 +289,12 @@ class TestDegradationUsageDocGenerator:
         degradation_trim_help = (
             DegradationUsageDocGenerator.get_degradation_help(DegrTest))
         target_docstring = '\n'.join((
-            "    testdeg,param1//param2: Degradation for this test",
+            "    testdeg,param1,param2: Degradation for this test",
             "        parameters:",
             "            param1: Parameter one [dBs]",
             "            param2: Parameter two [seconds]",
             "        example:",
-            "            testdeg,2.0//3.0"))
+            "            testdeg,2.0,3.0"))
         logging.debug("\n" + degradation_trim_help)
         logging.debug(target_docstring)
         assert degradation_trim_help == target_docstring
