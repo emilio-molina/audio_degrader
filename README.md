@@ -10,13 +10,15 @@ Audio degradation toolbox in python, with a command-line tool. It is useful to a
 
 `pip install audio_degrader`
 
-The program depends on `sox`, `ffmpeg` and `rubberband`, so you might need to install them as well. Recommended `brew` in OSX and `apt-get` in linux (for rubberband, in linux use rubberband-cli).
+The program depends on `sox`, `ffmpeg` and `rubberband`, so you might need to install them as well. Recommended `brew` in OSX and `apt-get` in linux (for rubberband, in linux use `rubberband-cli`).
 
 
 ## Usage of python package
 ```Python
 import audio_degrader as ad
 audio_file = ad.AudioFile('input.wav', './tmp_dir')
+for d in ad.ALL_DEGRADATIONS.values():
+    print ad.DegradationUsageDocGenerator.get_degradation_help(d)
 degradations = ad.ParametersParser.parse_degradations_args([
     'normalize',
     'gain,6',
@@ -88,7 +90,7 @@ $ audio_degrader -i input.wav -d convolution,http://www.cksde.com/sounds/month_i
 ### Output
 `audio_degrader` output format is always wav stereo `pcm_f32le` (sample rate from original audio file).
 
-In order to convert this output wav file into another format, it can be easily done with ffmpeg. e.g.:
+This output wav file can be easily coverted into another format with ffmpeg, e.g.:
 ```
 $ ffmpeg -i out.wav -b:a 320k out.mp3
 $ ffmpeg -i out.wav -ac 2 -ar 44100 -acodec pcm_s16le out_formatted.wav
