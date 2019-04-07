@@ -1,4 +1,4 @@
-from Degradations import ALL_DEGRADATIONS
+from AllDegradations import ALL_DEGRADATIONS
 from utils import NAME_SEP, PARAMETERS_SEP
 
 

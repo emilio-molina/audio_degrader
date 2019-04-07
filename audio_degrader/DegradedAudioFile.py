@@ -20,9 +20,9 @@ class DegradedAudioFile(object):
         self._create_tmp_mirror_file()
 
     def _create_tmp_mirror_file(self):
-        out, err = run(('ffmpeg -y -i {0} -ac 2 ' +
-                        '-acodec pcm_f32le {1}').format(
-            self.audio_path, self.tmp_path))
+        out, err, returncode = run(
+                'ffmpeg -y -i {0} -ac 2 -acodec pcm_f32le {1}'.format(
+                    self.audio_path, self.tmp_path))
         self.samples, self.sample_rate = lr.core.load(self.tmp_path,
                                                       sr=None, mono=False)
         logging.debug(out)
@@ -40,15 +40,17 @@ class DegradedAudioFile(object):
                             self.sample_rate, norm=False)
 
     def to_wav(self, output_path):
-        out, err = run("ffmpeg -y -i {0} {1}".format(self.tmp_path,
-                                                     output_path))
+        out, err, returncode = run(
+                "ffmpeg -y -i {0} {1}".format(self.tmp_path,
+                                              output_path))
         logging.debug(out)
         logging.debug(err)
 
     def to_mp3(self, output_path, bitrate='320k'):
-        out, err = run("ffmpeg -y -i {0} -b:a {1} {2}".format(self.tmp_path,
-                                                              bitrate,
-                                                              output_path))
+        out, err, returncode = run(
+                "ffmpeg -y -i {0} -b:a {1} {2}".format(self.tmp_path,
+                                                       bitrate,
+                                                       output_path))
         logging.debug(out)
         logging.debug(err)
 

@@ -15,4 +15,4 @@ def run(cmd):
     out, err = p.communicate()
     if p.returncode != 0:
         logging.error("Error running: " + cmd)
-    return out, err
+    return out, err, p.returncode
