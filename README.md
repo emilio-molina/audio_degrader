@@ -9,6 +9,11 @@ This tool allows to introduce controlled degradations to audio.
 
 The program depends on `sox`, `ffmpeg` and `rubberband`, so you might need to install them as well. Recommended `brew` in OSX and `apt-get` in linux (for rubberband, in linux use rubberband-cli).
 
+Once it is installed, e.g. this should work:
+```
+$ audio_degrader -i input.mp3 -d mix,sounds/applause.wav,-3 -o out.wav
+```
+
 ## Applications
 * Evaluate Music Information Retrieval systems under different degrees of degradations
 * Prepare augmented data for training of machine learning systems
@@ -145,7 +150,7 @@ $ audio_degrader -i input.wav -d gain,-15 mix,sounds/ambience-pub.wav,18 convolu
 
 
 # Resample and normalize
-$ audio_degrader -i input.wav -d resample,8000 normalize -o out.wav
+$ audio_degrader -i input.mp3 -d resample,8000 normalize -o out.wav
 
 
 # Convolution
