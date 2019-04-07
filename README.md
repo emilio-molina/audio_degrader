@@ -25,7 +25,7 @@ degradations = ad.ParametersParser.parse_degradations_args([
 for d in degradations:
     audio_file.apply_degradation(d)
 audio_file.to_wav('output.wav')
-audio_file.delete_tmp_mirror_file()
+audio_file.delete_tmp_files()
 ```
 
 ## Usage of command-line tool

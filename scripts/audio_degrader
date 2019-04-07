@@ -34,8 +34,8 @@ def main(in_wav, tmp_dir, degradations_args, out_wav):
         audio_file.apply_degradation(degradation)
     logging.info("Exporting to wav")
     audio_file.to_wav(out_wav)
-    logging.info("Deleting temporary mirror file")
-    audio_file.delete_tmp_mirror_file()
+    logging.info("Deleting temporary files")
+    audio_file.delete_tmp_files()
 
 if __name__ == "__main__":
     main_description = "Process audio with a sequence of degradations:\n"

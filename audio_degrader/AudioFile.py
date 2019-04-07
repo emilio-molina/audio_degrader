@@ -10,6 +10,7 @@ class AudioFile(object):
     """
     def __init__(self, audio_path, tmp_dir='./'):
         basename = os.path.basename(audio_path)
+        self.tmp_dir = tmp_dir
         self.applied_degradations = []
         self.audio_path = audio_path
         if not os.path.isdir(tmp_dir):
@@ -47,10 +48,15 @@ class AudioFile(object):
         logging.debug(out)
         logging.debug(err)
 
-    def delete_tmp_mirror_file(self):
+    def delete_tmp_files(self):
+        logging.debug("Deleting %s" % self.tmp_path)
         os.remove(self.tmp_path)
         if os.path.isfile(self.tmp_path_extra):
+            logging.debug("Deleting %s" % self.tmp_path_extra)
             os.remove(self.tmp_path_extra)
+        if os.listdir(self.tmp_dir) == []:
+            logging.debug("Deleting empty directory %s" % self.tmp_dir)
+            os.rmdir(self.tmp_dir)
 
     def resample(self, new_sample_rate):
         out, err, returncode = run(
