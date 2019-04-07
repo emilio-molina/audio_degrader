@@ -1,7 +1,8 @@
 import librosa as lr
 import logging
-import numpy as np
 from BaseDegradation import Degradation
+from utils import run
+import os
 
 
 class DegradationSpeed(Degradation):
@@ -16,12 +17,12 @@ class DegradationSpeed(Degradation):
     def apply(self, degraded_audio_file):
         speed_factor = float(self.parameters_values['speed'])
         logging.info('Modifying speed with factor %f' % speed_factor)
-        x = degraded_audio_file.samples
-        y0 = lr.core.resample(x[0, :], degraded_audio_file.sample_rate,
-                              degraded_audio_file.sample_rate / speed_factor)
-        y1 = lr.core.resample(x[1, :], degraded_audio_file.sample_rate,
-                              degraded_audio_file.sample_rate / speed_factor)
-        y = np.zeros((2, len(y0)))
-        y[0, :] = y0
-        y[1, :] = y1
+        extra_tmp_path = degraded_audio_file.tmp_path + '.extra.wav'
+        cmd = "ffmpeg -y -i {0} -ac 2 -ar {1} -acodec pcm_f32le {2}"
+        out, err, returncode = run(cmd.format(
+            degraded_audio_file.tmp_path,
+            int(degraded_audio_file.sample_rate / speed_factor),
+            extra_tmp_path))
+        y, sr = lr.core.load(extra_tmp_path, sr=None, mono=False)
+        os.remove(extra_tmp_path)
         degraded_audio_file.samples = y
