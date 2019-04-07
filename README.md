@@ -29,7 +29,7 @@ usage: audio_degrader [-h] [-i INPUT] [-t TMPDIR]
 Process audio with a sequence of degradations:
     convolution,impulse_response,level: Convolve input with specified impulse response
         parameters:
-            impulse_response: Full or relative path (to resources dir) of impulse response
+            impulse_response: Full path, URL, or relative path (to resources dir) of impulse response
             level: Wet level (0.0=dry, 1.0=wet)
         example:
             convolution,impulse_responses/ir_classroom.wav,1.0
@@ -52,7 +52,7 @@ Process audio with a sequence of degradations:
             gain,6
     mix,noise,snr: Mix input with a specified noise. The noise can be specified with its full path or relative to the resources directory (see -l option)
         parameters:
-            noise: Full or relative path (to resources dir) of noise
+            noise: Full path, URL, or relative path (to resources dir) of noise
             snr: Desired Signal-to-Noise-Ratio [dB]
         example:
             mix,sounds/ambience-pub.wav,6
@@ -135,6 +135,8 @@ Directory: /Users/emiliomolina/git/audio_degrader/audio_degrader/resources
 # resources files. A full absolute path can be also used.
 
 $ audio_degrader -i input.wav -d mix,sounds/applause.wav,-3 -o out.wav
+# thanks to the use of ffmpeg, it can read directly from an URL
+$ audio_degrader -i input.wav -d mix,https://www.pacdv.com/sounds/ambience_sounds/airport-security-1.mp3,-3 -o out.wav
 
 
 # Microphone recording style
@@ -149,6 +151,7 @@ $ audio_degrader -i input.wav -d resample,8000 normalize -o out.wav
 # Convolution
 # note: impulse_responses/ir_classroom_mono.wav is relative to the installed resources files
 $ audio_degrader -i input.wav -d convolution,impulse_responses/ir_classroom_mono.wav,0.7 -o out.wav
+$ audio_degrader -i input.wav -d convolution,http://www.cksde.com/sounds/month_ir/FLANGERSPACE%20E001%20M2S.wav,0.7 -o out.wav
 ```
 
 ## Audio format

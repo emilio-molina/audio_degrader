@@ -10,7 +10,7 @@ class DegradationMix(Degradation):
 
     name = "mix"
     description = ("Mix input with a specified noise. " +
-                   "The noise can be specified with its full path or "
+                   "The noise can be specified with its full path, URL,  or "
                    "relative to the resources directory (see -l option)")
     parameters_info = [("noise",
                         "sounds/ambience-pub.wav",
@@ -74,9 +74,12 @@ class DegradationMix(Degradation):
         resources_dir = os.path.join(audio_degrader.__path__[0],
                                      'resources')
         noise_path = self.parameters_values['noise']
-        if not os.path.isfile(noise_path):
-            noise_path = os.path.join(resources_dir, noise_path)
-        return noise_path
+        noise_path_resource = os.path.join(resources_dir, noise_path)
+        if (not os.path.isfile(noise_path)
+            and os.path.isfile(noise_path_resource)):
+            return noise_path_resource
+        else:
+            return noise_path
 
     def get_noise_gain_factor(self, snr_dbs, rms_noise, rms_input):
         """ Get gain factor that should be applied to noise

@@ -14,7 +14,7 @@ class DegradationConvolution(Degradation):
     parameters_info = [
         ("impulse_response",
          "impulse_responses/ir_classroom.wav",
-         "Full or relative path (to resources dir) of impulse response"),
+         "Full path, URL, or relative path (see -l option)"),
         ("level",
          "1.0",
          "Wet level (0.0=dry, 1.0=wet)")]
@@ -28,9 +28,11 @@ class DegradationConvolution(Degradation):
         resources_dir = os.path.join(audio_degrader.__path__[0],
                                      'resources')
         ir_path = self.parameters_values['impulse_response']
-        if not os.path.isfile(ir_path):
-            ir_path = os.path.join(resources_dir, ir_path)
-        return ir_path
+        ir_path_resource = os.path.join(resources_dir, ir_path)
+        if not os.path.isfile(ir_path) and os.path.isfile(ir_path_resource):
+            return ir_path_candidate
+        else:
+            return ir_path
 
     def apply(self, degraded_audio_file):
         ir_path = self.get_actual_impulse_response_path()
