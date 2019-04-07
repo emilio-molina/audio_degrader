@@ -95,12 +95,11 @@ class TestDegradationMix:
             os.makedirs(TMP_PATH)
         self.daf = DegradedAudioFile(TEST_STEREO_WAV_PATH,
                                      TMP_PATH)
-        self.noise_path = './tests/test_files/applause.wav'
 
     def test_degradation_mix(self):
         degradation_mix = DegradationMix()
         degradation_mix.set_parameters_values(
-            {'noise': self.noise_path,
+            {'noise': 'sounds/applause.wav',
              'snr': -3})
         self.daf.apply_degradation(degradation_mix)
         target_y, _ = lr.core.load('./tests/test_files/target_degr_mix.wav',
