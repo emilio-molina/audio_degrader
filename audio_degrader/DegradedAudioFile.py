@@ -17,6 +17,7 @@ class DegradedAudioFile(object):
         self.tmp_path = os.path.join(tmp_dir,
                                      (basename + '__tmp__' +
                                       str(uuid.uuid4()) + '.wav'))
+        self.tmp_path_extra = self.tmp_path + '.extra.wav'
         self._create_tmp_mirror_file()
 
     def _create_tmp_mirror_file(self):
@@ -48,11 +49,18 @@ class DegradedAudioFile(object):
 
     def delete_tmp_mirror_file(self):
         os.remove(self.tmp_path)
+        if os.path.isfile(self.tmp_path_extra):
+            os.remove(self.tmp_path_extra)
 
     def resample(self, new_sample_rate):
-        self.samples = lr.core.resample(self.samples, self.sample_rate,
-                                        new_sample_rate)
-        self.sample_rate = new_sample_rate
+        out, err, returncode = run(
+                ('ffmpeg -y -i {0} -ac 2 -acodec pcm_f32le ' +
+                 '-ar {1} {2}').format(
+                     self.tmp_path, new_sample_rate,
+                     self.tmp_path_extra))
+        logging.debug(out)
+        logging.debug(err)
+        self.samples, self.sample_rate = lr.core.load(
+                self.tmp_path_extra,
+                sr=None, mono=False)
         self._update_mirror_file()
-        self.samples, self.sample_rate = lr.core.load(self.tmp_path,
-                                                      sr=None, mono=False)

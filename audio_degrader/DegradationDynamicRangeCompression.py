@@ -1,7 +1,7 @@
 import librosa as lr
 import logging
 import os
-import subprocess
+from utils import run
 from BaseDegradation import Degradation
 
 
@@ -29,10 +29,8 @@ class DegradationDynamicRangeCompression(Degradation):
         cmd = cmd.format(degraded_audio_file.tmp_path,
                          extra_tmp_path)
         logging.info(cmd)
-        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
-        out, err = p.communicate()
-        if p.returncode != 0:
+        out, err, returncode = run(cmd)
+        if returncode != 0:
             logging.debug(out)
             logging.debug(err)
             logging.error("Error running sox!")
