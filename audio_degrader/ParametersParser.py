@@ -1,4 +1,4 @@
-from Degradations import ALL_DEGRADATIONS
+from AllDegradations import ALL_DEGRADATIONS
 from utils import NAME_SEP, PARAMETERS_SEP
 
 
@@ -14,10 +14,10 @@ class ParametersParser(object):
         Returns:
             (Degradation): Degradation object with specified parameters
         """
-        try:
+        if NAME_SEP in degradation_args:
             return ParametersParser.parse_degradation_args_with_params(
                 degradation_args)
-        except Exception:
+        else:
             return ParametersParser.parse_degradation_args_without_params(
                 degradation_args)
 
@@ -32,6 +32,8 @@ class ParametersParser(object):
         """
         parameters_values = {}
         name, params_str = degradation_args.split(NAME_SEP)
+        if name not in ALL_DEGRADATIONS:
+            raise Exception("Degradation %s not known" % name)
         degradation = ALL_DEGRADATIONS[name]()
         parameters_values_list = params_str.split(PARAMETERS_SEP)
         parameters_info = degradation.parameters_info
@@ -50,7 +52,9 @@ class ParametersParser(object):
         Returns:
             (Degradation): Degradation object
         """
-        [name] = degradation_args.split(NAME_SEP)
+        name = degradation_args
+        if name not in ALL_DEGRADATIONS:
+            raise Exception("Degradation %s not known" % name)
         degradation = ALL_DEGRADATIONS[name]()
         return degradation
 
