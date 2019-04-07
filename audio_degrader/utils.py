@@ -3,7 +3,7 @@ import logging
 
 
 NAME_SEP = ","
-PARAMETERS_SEP = "//"
+PARAMETERS_SEP = ","
 DESCRIPTION_SEP = ": "
 
 

@@ -27,35 +27,35 @@ usage: audio_degrader [-h] [-i INPUT] [-t TMPDIR]
                       [-o OUTPUT] [-l] [-v VERBOSITY_LEVEL]
 
 Process audio with a sequence of degradations:
-    convolution,impulse_response//level: Convolve input with specified impulse response
+    convolution,impulse_response,level: Convolve input with specified impulse response
         parameters:
             impulse_response: Full or relative path (to resources dir) of impulse response
             level: Wet level (0.0=dry, 1.0=wet)
         example:
-            convolution,impulse_responses/ir_classroom.wav//1.0
+            convolution,impulse_responses/ir_classroom.wav,1.0
     dr_compression,degree: Apply dynamic range compression
         parameters:
             degree: Degree of compression. Presets from 0 (soft) to 3 (hard)
         example:
             dr_compression,0
-    equalize,central_freq//bandwidth//gain: Apply a two-pole peaking equalisation (EQ) filter
+    equalize,central_freq,bandwidth,gain: Apply a two-pole peaking equalisation (EQ) filter
         parameters:
             central_freq: Central frequency of filter in Hz
             bandwidth: Bandwith of filter in Hz
             gain: Gain of filter in dBs
         example:
-            equalize,100//50//-10
+            equalize,100,50,-10
     gain,value: Apply gain expressed in dBs
         parameters:
             value: Gain value [dB]
         example:
             gain,6
-    mix,noise//snr: Mix input with a specified noise. The noise can be specified with its full path or relative to the resources directory (see -l option)
+    mix,noise,snr: Mix input with a specified noise. The noise can be specified with its full path or relative to the resources directory (see -l option)
         parameters:
             noise: Full or relative path (to resources dir) of noise
             snr: Desired Signal-to-Noise-Ratio [dB]
         example:
-            mix,sounds/ambience-pub.wav//6
+            mix,sounds/ambience-pub.wav,6
     mp3,bitrate: Emulate mp3 transcoding
         parameters:
             bitrate: Quality [bps]
@@ -134,12 +134,12 @@ Directory: /Users/emiliomolina/git/audio_degrader/audio_degrader/resources
 # note: sounds/applause.wav is relative path with respect to installed
 # resources files. A full absolute path can be also used.
 
-$ audio_degrader -i input.wav -d mix,sounds/applause.wav//-3 -o out.wav
+$ audio_degrader -i input.wav -d mix,sounds/applause.wav,-3 -o out.wav
 
 
 # Microphone recording style
 
-$ audio_degrader -i input.wav -d gain,-15 mix,sounds/ambience-pub.wav//18 convolution,impulse_responses/ir_smartphone_mic_mono.wav//0.8 dr_compression,2 equalize,50//100//-6 normalize -o out.wav
+$ audio_degrader -i input.wav -d gain,-15 mix,sounds/ambience-pub.wav,18 convolution,impulse_responses/ir_smartphone_mic_mono.wav,0.8 dr_compression,2 equalize,50,100,-6 normalize -o out.wav
 
 
 # Resample and normalize
@@ -148,7 +148,7 @@ $ audio_degrader -i input.wav -d resample,8000 normalize -o out.wav
 
 # Convolution
 # note: impulse_responses/ir_classroom_mono.wav is relative to the installed resources files
-$ audio_degrader -i input.wav -d convolution,impulse_responses/ir_classroom_mono.wav//0.7 -o out.wav
+$ audio_degrader -i input.wav -d convolution,impulse_responses/ir_classroom_mono.wav,0.7 -o out.wav
 ```
 
 ## Audio format

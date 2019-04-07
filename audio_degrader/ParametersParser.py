@@ -31,7 +31,8 @@ class ParametersParser(object):
             (Degradation): Degradation object with specified parameters
         """
         parameters_values = {}
-        name, params_str = degradation_args.split(NAME_SEP)
+        name = degradation_args.split(NAME_SEP)[0]
+        params_str = NAME_SEP.join(degradation_args.split(NAME_SEP)[1:])
         if name not in ALL_DEGRADATIONS:
             raise Exception("Degradation %s not known" % name)
         degradation = ALL_DEGRADATIONS[name]()
