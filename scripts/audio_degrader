@@ -33,6 +33,11 @@ def main(in_wav, tmp_dir, degradations_args, out_wav):
             logging.info("    without parameters")
         audio_file.apply_degradation(degradation)
     logging.info("Exporting to wav")
+    out_ext = os.path.splitext(out_wav)[1]
+    if out_ext != '.wav':
+        logging.info(("{0} is not a valid output format. "
+                      "Adding .wav extension").format(out_ext))
+        out_wav += '.wav'
     audio_file.to_wav(out_wav)
     logging.info("Deleting temporary files")
     audio_file.delete_tmp_files()
