@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from utils import NAME_SEP, PARAMETERS_SEP, DESCRIPTION_SEP
+from .utils import NAME_SEP, PARAMETERS_SEP, DESCRIPTION_SEP
 
 
 class Degradation(object):

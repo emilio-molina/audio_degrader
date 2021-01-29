@@ -3,8 +3,8 @@ import logging
 import numpy as np
 from scipy import signal
 import os
-from utils import run
-from BaseDegradation import Degradation
+from .utils import run
+from .BaseDegradation import Degradation
 
 
 class DegradationConvolution(Degradation):

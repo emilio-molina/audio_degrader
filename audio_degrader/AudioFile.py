@@ -2,7 +2,7 @@ import os
 import librosa as lr
 import logging
 import uuid
-from utils import run
+from .utils import run
 
 
 class AudioFile(object):
