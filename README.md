@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/emilio-molina/audio_degrader.svg?branch=master)](https://travis-ci.org/emilio-molina/audio_degrader)
+[![Build Status](https://travis-ci.com/emilio-molina/audio_degrader.svg?branch=master)](https://travis-ci.com/emilio-molina/audio_degrader)
 # audio_degrader
 
 Latest version: `1.2.3`
