@@ -1,7 +1,10 @@
-import os
-import librosa as lr
 import logging
+import os
 import uuid
+
+import librosa as lr
+import soundfile as sf
+
 from utils import run
 
 
@@ -38,8 +41,10 @@ class AudioFile(object):
 
     def _update_mirror_file(self):
         logging.debug("Updating mirror file")
-        lr.output.write_wav(self.tmp_path, self.samples,
-                            self.sample_rate, norm=False)
+        wav = self.samples
+        if wav.ndim > 1 and wav.shape[0] == 2:
+            wav = wav.T
+        sf.write(self.tmp_path, wav,  self.sample_rate)
 
     def to_wav(self, output_path):
         out, err, returncode = run(
