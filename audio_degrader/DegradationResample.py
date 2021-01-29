@@ -1,4 +1,4 @@
-from BaseDegradation import Degradation
+from .BaseDegradation import Degradation
 
 
 class DegradationResample(Degradation):

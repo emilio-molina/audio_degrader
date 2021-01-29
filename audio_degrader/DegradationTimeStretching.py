@@ -1,8 +1,8 @@
 import librosa as lr
 import logging
-from utils import run
+from .utils import run
 import os
-from BaseDegradation import Degradation
+from .BaseDegradation import Degradation
 
 
 class DegradationTimeStretching(Degradation):

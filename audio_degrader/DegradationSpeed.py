@@ -1,7 +1,7 @@
 import librosa as lr
 import logging
-from BaseDegradation import Degradation
-from utils import run
+from .BaseDegradation import Degradation
+from .utils import run
 import os
 
 

@@ -2,8 +2,8 @@ import os
 import librosa as lr
 import logging
 import numpy as np
-from utils import run
-from BaseDegradation import Degradation
+from .utils import run
+from .BaseDegradation import Degradation
 
 
 class DegradationMix(Degradation):

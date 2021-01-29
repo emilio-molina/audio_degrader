@@ -1,9 +1,9 @@
 import librosa as lr
 import logging
 import numpy as np
-from utils import run
+from .utils import run
 import os
-from BaseDegradation import Degradation
+from .BaseDegradation import Degradation
 
 
 class DegradationPitchShifting(Degradation):

@@ -1,6 +1,6 @@
 import logging
 import numpy as np
-from BaseDegradation import Degradation
+from .BaseDegradation import Degradation
 
 
 class DegradationNormalization(Degradation):

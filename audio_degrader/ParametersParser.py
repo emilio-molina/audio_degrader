@@ -1,5 +1,5 @@
-from AllDegradations import ALL_DEGRADATIONS
-from utils import NAME_SEP, PARAMETERS_SEP
+from .AllDegradations import ALL_DEGRADATIONS
+from .utils import NAME_SEP, PARAMETERS_SEP
 
 
 class ParametersParser(object):
