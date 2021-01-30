@@ -1,6 +1,6 @@
 import os
 import shutil
-import librosa as lr
+import soundfile as sf
 import numpy as np
 import logging
 from audio_degrader import Degradation, DegradationUsageDocGenerator
@@ -28,15 +28,15 @@ class TestDegradationTrim:
                              TMP_PATH)
 
     def test_degradation_trim(self):
-        samples, sample_rate = lr.core.load(self.daf.tmp_path,
-                                            sr=None, mono=False)
+        samples, sample_rate = sf.read(self.daf.tmp_path)
+        samples = samples.T
         prev_length = samples.shape[1]
         degradation_trim = DegradationTrim()
         trim_seconds = 1
         degradation_trim.set_parameters_values({'start_time': trim_seconds})
         self.daf.apply_degradation(degradation_trim)
-        samples, sample_rate = lr.core.load(self.daf.tmp_path,
-                                            sr=None, mono=False)
+        samples, sample_rate = sf.read(self.daf.tmp_path)
+        samples = samples.T
         after_length = samples.shape[1]
         assert after_length == prev_length - int(sample_rate * trim_seconds)
 
@@ -102,8 +102,8 @@ class TestDegradationMix:
             {'noise': 'sounds/applause.wav',
              'snr': -3})
         self.daf.apply_degradation(degradation_mix)
-        target_y, _ = lr.core.load('./tests/test_files/target_degr_mix.wav',
-                                   sr=None, mono=False)
+        target_y, _ = sf.read('./tests/test_files/target_degr_mix.wav')
+        target_y = target_y.T
         assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
 
     def teardown_class(self):
@@ -124,9 +124,8 @@ class TestDegradationResample:
         degradation_resample.set_parameters_values(
             {'sample_rate': 8000})
         self.daf.apply_degradation(degradation_resample)
-        target_y, sr = lr.core.load(
-            './tests/test_files/target_degr_resample.wav',
-            sr=None, mono=False)
+        target_y, sr = sf.read('./tests/test_files/target_degr_resample.wav')
+        target_y = target_y.T
         assert self.daf.sample_rate == sr
         assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
 
@@ -149,9 +148,9 @@ class TestDegradationConvolution:
             {'impulse_response': 'impulse_responses/ir_classroom_mono.wav',
              'level': '0.7'})
         self.daf.apply_degradation(degradation_convolution)
-        target_y, sr = lr.core.load(
-            './tests/test_files/target_degr_convolution.wav',
-            sr=None, mono=False)
+        target_y, sr = sf.read(
+            './tests/test_files/target_degr_convolution.wav')
+        target_y = target_y.T
         assert self.daf.sample_rate == sr
         assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
 
@@ -173,9 +172,8 @@ class TestDegradationSpeed:
         degradation_speed.set_parameters_values(
             {'speed': '0.9'})
         self.daf.apply_degradation(degradation_speed)
-        target_y, _ = lr.core.load(
-            './tests/test_files/target_degr_speed.wav',
-            sr=None, mono=False)
+        target_y, _ = sf.read('./tests/test_files/target_degr_speed.wav')
+        target_y = target_y.T
         assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
 
     def teardown_class(self):
@@ -196,9 +194,8 @@ class TestDegradationPitchShifting:
         degradation_pitch_shifting.set_parameters_values(
             {'pitch_shift_factor': '0.9'})
         self.daf.apply_degradation(degradation_pitch_shifting)
-        target_y, _ = lr.core.load(
-            './tests/test_files/target_degr_pitchshift.wav',
-            sr=None, mono=False)
+        target_y, _ = sf.read('./tests/test_files/target_degr_pitchshift.wav')
+        target_y = target_y.T
         assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
 
     def teardown_class(self):
@@ -219,9 +216,8 @@ class TestDegradationTimeStretching:
         degradation_time_stretching.set_parameters_values(
             {'time_stretch_factor': '0.9'})
         self.daf.apply_degradation(degradation_time_stretching)
-        target_y, _ = lr.core.load(
-            './tests/test_files/target_degr_timestretch.wav',
-            sr=None, mono=False)
+        target_y, _ = sf.read('./tests/test_files/target_degr_timestretch.wav')
+        target_y = target_y.T
         assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
 
     def teardown_class(self):
@@ -242,9 +238,9 @@ class TestDegradationDynamicRangeCompression:
         degradation_drcompression.set_parameters_values(
             {'degree': '3'})
         self.daf.apply_degradation(degradation_drcompression)
-        target_y, _ = lr.core.load(
-            './tests/test_files/target_degr_drcompression.wav',
-            sr=None, mono=False)
+        target_y, _ = sf.read(
+            './tests/test_files/target_degr_drcompression.wav')
+        target_y = target_y.T
         assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
 
     def teardown_class(self):
@@ -267,9 +263,8 @@ class TestDegradationEqualization:
              'bandwidth': '10',
              'gain': '20'})
         self.daf.apply_degradation(degradation_equalization)
-        target_y, _ = lr.core.load(
-            './tests/test_files/target_degr_equalize.wav',
-            sr=None, mono=False)
+        target_y, _ = sf.read('./tests/test_files/target_degr_equalize.wav')
+        target_y = target_y.T
         assert np.mean(np.abs(target_y - self.daf.samples)) < 0.001
 
     def teardown_class(self):

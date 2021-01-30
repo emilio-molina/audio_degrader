@@ -1,5 +1,5 @@
 import os
-import librosa as lr
+import soundfile as sf
 import logging
 import numpy as np
 from .utils import run
@@ -36,7 +36,8 @@ class DegradationMix(Degradation):
         out, err, returncode = run(cmd)
         logging.debug(out)
         logging.debug(err)
-        aux_x_noise, sr = lr.core.load(extra_tmp_path, sr=None, mono=False)
+        aux_x_noise, sr = sf.read(extra_tmp_path)
+        aux_x_noise = aux_x_noise.T
         assert sr == sample_rate
         os.remove(extra_tmp_path)
         if len(aux_x_noise.shape) == 1:

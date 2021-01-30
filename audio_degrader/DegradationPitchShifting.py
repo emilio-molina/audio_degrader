@@ -1,4 +1,4 @@
-import librosa as lr
+import soundfile as sf
 import logging
 import numpy as np
 from .utils import run
@@ -29,6 +29,7 @@ class DegradationPitchShifting(Degradation):
             extra_tmp_path))
         logging.debug(out)
         logging.debug(err)
-        y, sr = lr.core.load(extra_tmp_path, sr=None, mono=False)
+        y, sr = sf.read(extra_tmp_path)
+        y = y.T
         os.remove(extra_tmp_path)
         audio_file.samples = y

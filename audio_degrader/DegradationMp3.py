@@ -1,5 +1,5 @@
 from .utils import run
-import librosa as lr
+import soundfile as sf
 import logging
 import os
 from .BaseDegradation import Degradation
@@ -24,8 +24,8 @@ class DegradationMp3(Degradation):
                     tmp_mp3_path, tmp_wav_path))
         logging.debug(out)
         logging.debug(err)
-        samples, _ = lr.core.load(tmp_wav_path,
-                                  sr=None, mono=False)
+        samples, _ = sf.read(tmp_wav_path)
+        samples = samples.T
         audio_file.samples = samples
         os.remove(tmp_mp3_path)
         os.remove(tmp_wav_path)

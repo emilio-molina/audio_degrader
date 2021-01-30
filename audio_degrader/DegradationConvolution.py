@@ -1,4 +1,4 @@
-import librosa as lr
+import soundfile as sf
 import logging
 import numpy as np
 from scipy import signal
@@ -47,16 +47,12 @@ class DegradationConvolution(Degradation):
         out, err, returncode = run(cmd)
         logging.debug(out)
         logging.debug(err)
-        ir_x, sr_x = lr.core.load(extra_tmp_path, sr=None, mono=False)
+        ir_x, _ = sf.read(extra_tmp_path)
+        ir_x = ir_x.T
         os.remove(extra_tmp_path)
-        logging.info('Converting IR sample rate from {0}Hz to {1}Hz'.format(
-            sr_x, audio_file.sample_rate))
         y_wet = np.zeros(x.shape)
         for channel in [0, 1]:
-            sampled_ir_x = lr.core.resample(ir_x[channel, :],
-                                            sr_x,
-                                            audio_file.sample_rate)
             y_wet[channel, :] = signal.fftconvolve(
-                x[channel, :], sampled_ir_x, mode='full')[0:x.shape[1]]
+                x[channel, :], ir_x[channel, :], mode='full')[0:x.shape[1]]
         y = y_wet * level + x * (1 - level)
         audio_file.samples = y

@@ -1,4 +1,4 @@
-import librosa as lr
+import soundfile as sf
 import logging
 import os
 from .utils import run
@@ -34,7 +34,8 @@ class DegradationDynamicRangeCompression(Degradation):
             logging.debug(out)
             logging.debug(err)
             logging.error("Error running sox!")
-        y, sr = lr.core.load(extra_tmp_path, sr=None, mono=False)
+        y, sr = sf.read(extra_tmp_path)
+        y = y.T
         os.remove(extra_tmp_path)
         assert audio_file.sample_rate == sr
         audio_file.samples = y

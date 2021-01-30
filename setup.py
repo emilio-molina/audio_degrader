@@ -5,6 +5,9 @@ this_directory = path.abspath(path.dirname(__file__))
 with open(path.join(this_directory, 'README.md')) as f:
     long_description = f.read()
 
+with open('requirements.txt') as fp:
+    install_requires = fp.read()
+
 setup(
     name='audio_degrader',
     packages=['audio_degrader'],
@@ -15,7 +18,7 @@ setup(
     url='https://github.com/EliosMolina/audio_degrader',
     download_url='https://github.com/EliosMolina/audio_degrader/archive/master.zip',
     keywords=['audio', 'degradation', 'augmentation'],
-    install_requires=['librosa >= 0.6.0', 'soundfile'],
+    install_requires=install_requires,
     package_data={'audio_degrader': ['resources/impulse_responses/*',
                                      'resources/sounds/*']},
     scripts=['scripts/audio_degrader'],

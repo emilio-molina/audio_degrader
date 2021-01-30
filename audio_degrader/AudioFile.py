@@ -2,8 +2,6 @@ import logging
 import os
 import uuid
 from .utils import run
-
-import librosa as lr
 import soundfile as sf
 
 
@@ -27,8 +25,8 @@ class AudioFile(object):
         out, err, returncode = run(
                 'ffmpeg -y -i {0} -ac 2 -acodec pcm_f32le {1}'.format(
                     self.audio_path, self.tmp_path))
-        self.samples, self.sample_rate = lr.core.load(self.tmp_path,
-                                                      sr=None, mono=False)
+        self.samples, self.sample_rate = sf.read(self.tmp_path)
+        self.samples = self.samples.T
         logging.debug(out)
         logging.debug(err)
 
@@ -70,7 +68,6 @@ class AudioFile(object):
                      self.tmp_path_extra))
         logging.debug(out)
         logging.debug(err)
-        self.samples, self.sample_rate = lr.core.load(
-                self.tmp_path_extra,
-                sr=None, mono=False)
+        self.samples, self.sample_rate = sf.read(self.tmp_path_extra)
+        self.samples = self.samples.T
         self._update_mirror_file()
