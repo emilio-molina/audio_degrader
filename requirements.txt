@@ -1,3 +1,4 @@
+scipy
 flake8
 pytest
 soundfile
