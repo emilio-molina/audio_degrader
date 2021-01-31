@@ -14,7 +14,7 @@ class DegradationConvolution(Degradation):
     parameters_info = [
         ("impulse_response",
          "impulse_responses/ir_classroom.wav",
-         "Full path, URL, or relative path (see -l option)"),
+         "Full path, URL (requires wget), or relative path (see -l option)"),
         ("level",
          "1.0",
          "Wet level (0.0=dry, 1.0=wet)")]

@@ -12,6 +12,73 @@ Audio degradation toolbox in python, with a command-line tool. It is useful to a
 
 The program depends on `pysox`, so you might need to install `sox` (and `libsox-fmt-mp3` for mp3 encoding). Go to https://github.com/rabitt/pysox to have more details about it.
 
+## Available degradations
+
+```
+    convolution,impulse_response,level: Convolve input with specified impulse response
+        parameters:
+            impulse_response: Full path, URL (requires wget), or relative path (see -l option)
+            level: Wet level (0.0=dry, 1.0=wet)
+        example:
+            convolution,impulse_responses/ir_classroom.wav,1.0
+    dr_compression,degree: Apply dynamic range compression
+        parameters:
+            degree: Degree of compression. Presets from 0 (soft) to 3 (hard)
+        example:
+            dr_compression,0
+    equalize,central_freq,bandwidth,gain: Apply a two-pole peaking equalisation (EQ) filter
+        parameters:
+            central_freq: Central frequency of filter in Hz
+            bandwidth: Bandwith of filter in Hz
+            gain: Gain of filter in dBs
+        example:
+            equalize,100,50,-10
+    gain,value: Apply gain expressed in dBs
+        parameters:
+            value: Gain value [dB]
+        example:
+            gain,6
+    mix,noise,snr: Mix input with a specified noise. The noise can be specified with its full path, URL (requires wget installed),  or relative to the resources directory (see -l option)
+        parameters:
+            noise: Full or relative path (to resources dir) of noise
+            snr: Desired Signal-to-Noise-Ratio [dB]
+        example:
+            mix,sounds/ambience-pub.wav,6
+    mp3,bitrate: Emulate mp3 transcoding
+        parameters:
+            bitrate: Quality [bps]
+        example:
+            mp3,320k
+    normalize: Normalize amplitude of audio to range [-1.0, 1.0]
+        parameters:
+        example:
+            normalize
+    pitch_shift,pitch_shift_factor: Apply pitch shifting
+        parameters:
+            pitch_shift_factor: Pitch shift factor
+        example:
+            pitch_shift,0.9
+    resample,sample_rate: Resample to given sample rate
+        parameters:
+            sample_rate: Desired sample rate [Hz]
+        example:
+            resample,8000
+    speed,speed: Change playback speed
+        parameters:
+            speed: Playback speed factor
+        example:
+            speed,0.9
+    time_stretch,time_stretch_factor: Apply time stretching
+        parameters:
+            time_stretch_factor: Time stretch factor
+        example:
+            time_stretch,0.9
+    trim_from,start_time: Trim audio from a given start time
+        parameters:
+            start_time: Trim start [seconds]
+        example:
+            trim_from,0.1
+```
 
 ## Usage of python package
 ```Python

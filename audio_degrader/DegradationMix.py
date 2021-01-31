@@ -10,7 +10,8 @@ class DegradationMix(Degradation):
 
     name = "mix"
     description = ("Mix input with a specified noise. " +
-                   "The noise can be specified with its full path, URL,  or "
+                   "The noise can be specified with its full path, URL " +
+                   "(requires wget installed),  or "
                    "relative to the resources directory (see -l option)")
     parameters_info = [("noise",
                         "sounds/ambience-pub.wav",
