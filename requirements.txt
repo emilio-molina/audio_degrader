@@ -1,4 +1,4 @@
-scipy
-flake8
-pytest
-soundfile
+scipy==1.6.0
+sox==1.4.1
+SoundFile==0.10.3.post1
+pytest==6.2.2

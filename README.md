@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.com/emilio-molina/audio_degrader.svg?branch=master)](https://travis-ci.com/emilio-molina/audio_degrader)
 # audio_degrader
 
-Latest version: `1.2.3`
+Latest version: `1.3.0`
 
 Audio degradation toolbox in python, with a command-line tool. It is useful to apply controlled degradations to audio.
 
@@ -10,7 +10,7 @@ Audio degradation toolbox in python, with a command-line tool. It is useful to a
 
 `pip install audio_degrader`
 
-The program depends on `sox`, `ffmpeg` and `rubberband`, so you might need to install them as well. Recommended `brew` in OSX and `apt-get` in linux (for rubberband, in linux use `rubberband-cli`).
+The program depends on `pysox`, so you might need to install `sox` (and `libsox-fmt-mp3` for mp3 encoding). Go to https://github.com/rabitt/pysox to have more details about it.
 
 
 ## Usage of python package

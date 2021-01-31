@@ -1,9 +1,9 @@
 import soundfile as sf
 import logging
+import sox
 import numpy as np
 from scipy import signal
 import os
-from .utils import run
 from .BaseDegradation import Degradation
 
 
@@ -40,13 +40,11 @@ class DegradationConvolution(Degradation):
         logging.info('Convolving with %s and level %f' % (ir_path, level))
         x = audio_file.samples
         extra_tmp_path = audio_file.tmp_path + '.extra.wav'
-        cmd = "ffmpeg -y -i {0} -ar {1} -ac 2 -acodec pcm_f32le {2}".format(
-                ir_path,
-                audio_file.sample_rate,
-                extra_tmp_path)
-        out, err, returncode = run(cmd)
-        logging.debug(out)
-        logging.debug(err)
+        tfm = sox.Transformer()
+        tfm.rate(audio_file.sample_rate)
+        tfm.convert(n_channels=2, bitdepth=32)
+        tfm.build(ir_path, extra_tmp_path)
+
         ir_x, _ = sf.read(extra_tmp_path)
         ir_x = ir_x.T
         os.remove(extra_tmp_path)

@@ -1,6 +1,6 @@
 import soundfile as sf
 import logging
-from .utils import run
+import sox
 import os
 from .BaseDegradation import Degradation
 
@@ -20,13 +20,10 @@ class DegradationTimeStretching(Degradation):
         logging.info(('Time stretching with factor %f' %
                       (time_stretch_factor)))
         extra_tmp_path = audio_file.tmp_path + '.extra.wav'
-        cmd = "rubberband {0} -T {1} --no-threads {2}"
-        out, err, returncode = run(cmd.format(
-            audio_file.tmp_path,
-            time_stretch_factor,
-            extra_tmp_path))
-        logging.debug(out)
-        logging.debug(err)
+        tfm = sox.Transformer()
+        tfm.tempo(time_stretch_factor)
+        tfm.convert(n_channels=2, bitdepth=32)
+        tfm.build(audio_file.tmp_path, extra_tmp_path)
         y, sr = sf.read(extra_tmp_path)
         y = y.T
         os.remove(extra_tmp_path)

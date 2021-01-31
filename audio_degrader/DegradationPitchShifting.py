@@ -1,7 +1,7 @@
 import soundfile as sf
 import logging
 import numpy as np
-from .utils import run
+import sox
 import os
 from .BaseDegradation import Degradation
 
@@ -22,13 +22,10 @@ class DegradationPitchShifting(Degradation):
         logging.info('Shifting pitch with factor %f, i.e. %f semitones' %
                      (pitch_shift_factor, n_semitones))
         extra_tmp_path = audio_file.tmp_path + '.extra.wav'
-        cmd = "rubberband {0} -f {1} --no-threads {2}"
-        out, err, returncode = run(cmd.format(
-            audio_file.tmp_path,
-            pitch_shift_factor,
-            extra_tmp_path))
-        logging.debug(out)
-        logging.debug(err)
+        tfm = sox.Transformer()
+        tfm.pitch(n_semitones)
+        tfm.convert(n_channels=2, bitdepth=32)
+        tfm.build(audio_file.tmp_path, extra_tmp_path)
         y, sr = sf.read(extra_tmp_path)
         y = y.T
         os.remove(extra_tmp_path)

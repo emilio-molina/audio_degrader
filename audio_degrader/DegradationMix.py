@@ -2,7 +2,7 @@ import os
 import soundfile as sf
 import logging
 import numpy as np
-from .utils import run
+import sox
 from .BaseDegradation import Degradation
 
 
@@ -29,13 +29,11 @@ class DegradationMix(Degradation):
         """
         sample_rate = audio_file.sample_rate
         extra_tmp_path = audio_file.tmp_path + '.extra.wav'
-        cmd = "ffmpeg -y -i {0} -ar {1} -ac 2 -acodec pcm_f32le {2}".format(
-                noise_path,
-                sample_rate,
-                extra_tmp_path)
-        out, err, returncode = run(cmd)
-        logging.debug(out)
-        logging.debug(err)
+        tfm = sox.Transformer()
+        tfm.rate(sample_rate)
+        tfm.convert(n_channels=2, bitdepth=32)
+        tfm.build(noise_path, extra_tmp_path)
+
         aux_x_noise, sr = sf.read(extra_tmp_path)
         aux_x_noise = aux_x_noise.T
         assert sr == sample_rate

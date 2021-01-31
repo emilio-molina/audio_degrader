@@ -55,7 +55,7 @@ class TestDegradationMp3:
 
     def test_degradation_mp3(self):
         degradation_mp3 = DegradationMp3()
-        bitrate = '16k'
+        bitrate = '32k'
         degradation_mp3.set_parameters_values({'bitrate': bitrate})
         self.daf.apply_degradation(degradation_mp3)
 

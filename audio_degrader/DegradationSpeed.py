@@ -1,7 +1,7 @@
 import soundfile as sf
 import logging
 from .BaseDegradation import Degradation
-from .utils import run
+import sox
 import os
 
 
@@ -18,13 +18,10 @@ class DegradationSpeed(Degradation):
         speed_factor = float(self.parameters_values['speed'])
         logging.info('Modifying speed with factor %f' % speed_factor)
         extra_tmp_path = audio_file.tmp_path + '.extra.wav'
-        cmd = "ffmpeg -y -i {0} -ac 2 -ar {1} -acodec pcm_f32le {2}"
-        out, err, returncode = run(cmd.format(
-            audio_file.tmp_path,
-            int(audio_file.sample_rate / speed_factor),
-            extra_tmp_path))
-        logging.debug(out)
-        logging.debug(err)
+        tfm = sox.Transformer()
+        tfm.speed(speed_factor)
+        tfm.convert(n_channels=2, bitdepth=32)
+        tfm.build(audio_file.tmp_path, extra_tmp_path)
         y, sr = sf.read(extra_tmp_path)
         y = y.T
         os.remove(extra_tmp_path)

@@ -1,7 +1,7 @@
 import logging
 import os
 import uuid
-from .utils import run
+import sox
 import soundfile as sf
 
 
@@ -22,13 +22,11 @@ class AudioFile(object):
         self._create_tmp_mirror_file()
 
     def _create_tmp_mirror_file(self):
-        out, err, returncode = run(
-                'ffmpeg -y -i {0} -ac 2 -acodec pcm_f32le {1}'.format(
-                    self.audio_path, self.tmp_path))
+        tfm = sox.Transformer()
+        tfm.convert(n_channels=2, bitdepth=32)
+        tfm.build(self.audio_path, self.tmp_path)
         self.samples, self.sample_rate = sf.read(self.tmp_path)
         self.samples = self.samples.T
-        logging.debug(out)
-        logging.debug(err)
 
     def apply_degradation(self, degradation):
         self.applied_degradations.append(degradation)
@@ -44,11 +42,9 @@ class AudioFile(object):
         sf.write(self.tmp_path, wav,  self.sample_rate)
 
     def to_wav(self, output_path):
-        out, err, returncode = run(
-                "ffmpeg -y -i {0} -ac 2 -acodec pcm_f32le {1}".format(
-                    self.tmp_path, output_path))
-        logging.debug(out)
-        logging.debug(err)
+        tfm = sox.Transformer()
+        tfm.convert(n_channels=2, bitdepth=32)
+        tfm.build(self.tmp_path, output_path)
 
     def delete_tmp_files(self):
         logging.debug("Deleting %s" % self.tmp_path)
@@ -61,13 +57,11 @@ class AudioFile(object):
             os.rmdir(self.tmp_dir)
 
     def resample(self, new_sample_rate):
-        out, err, returncode = run(
-                ('ffmpeg -y -i {0} -ac 2 -acodec pcm_f32le ' +
-                 '-ar {1} {2}').format(
-                     self.tmp_path, new_sample_rate,
-                     self.tmp_path_extra))
-        logging.debug(out)
-        logging.debug(err)
+        tfm = sox.Transformer()
+        tfm.rate(new_sample_rate)
+        tfm.convert(n_channels=2, bitdepth=32)
+        tfm.build(self.tmp_path, self.tmp_path_extra)
+
         self.samples, self.sample_rate = sf.read(self.tmp_path_extra)
         self.samples = self.samples.T
         self._update_mirror_file()
