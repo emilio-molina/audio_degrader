@@ -92,13 +92,13 @@ if __name__ == "__main__":
     if args['list_resources']:
         resources_dir = os.path.join(audio_degrader.__path__[0],
                                      'resources')
-        print "Available resources"
-        print "Directory: {0}".format(resources_dir)
+        print("Available resources")
+        print("Directory: {0}".format(resources_dir))
         for root, dirs, fnames in os.walk(resources_dir):
             rel_dir = os.path.relpath(root, resources_dir)
             for fname in fnames:
                 if os.path.splitext(fname)[1] == '.wav':
-                    print "  " + os.path.join(rel_dir, fname)
+                    print("  " + os.path.join(rel_dir, fname))
         exit(0)
 
     main(args['input'],
