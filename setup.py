@@ -11,7 +11,7 @@ with open('requirements.txt') as fp:
 setup(
     name='audio_degrader',
     packages=['audio_degrader'],
-    version='1.3.0',
+    version='1.3.1',
     description='Tool to introduce controlled degradations to audio',
     author='Emilio Molina',
     author_email='emilio.mol.mar@gmail.com',

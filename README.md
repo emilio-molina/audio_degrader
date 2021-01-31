@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.com/emilio-molina/audio_degrader.svg?branch=master)](https://travis-ci.com/emilio-molina/audio_degrader)
 # audio_degrader
 
-Latest version: `1.3.0`
+Latest version: `1.3.1`
 
 Audio degradation toolbox in python, with a command-line tool. It is useful to apply controlled degradations to audio.
 

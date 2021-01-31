@@ -1,4 +1,4 @@
-scipy==1.6.0
+scipy>=1.4.1
 sox==1.4.1
 SoundFile==0.10.3.post1
-pytest==6.2.2
+pytest>=6.1.2
