@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/emilio-molina/audio_degrader.svg?branch=master)](https://travis-ci.com/emilio-molina/audio_degrader)
+[![PyPI version](https://badge.fury.io/py/audio-degrader.svg)](https://badge.fury.io/py/audio-degrader)
 # audio_degrader
 
 Latest version: `1.3.1`
@@ -8,7 +9,7 @@ Audio degradation toolbox in python, with a command-line tool. It is useful to a
 
 ## Installation
 
-`pip install audio_degrader`
+`pip install audio-degrader`
 
 The program depends on `pysox`, so you might need to install `sox` (and `libsox-fmt-mp3` for mp3 encoding). Go to https://github.com/rabitt/pysox to have more details about it.
 
