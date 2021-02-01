@@ -153,12 +153,12 @@ $ audio_degrader -i input.wav -d convolution,http://www.cksde.com/sounds/month_i
 ## Audio formats
 
 ### Input
-`audio_degrader` relies on ffmpeg for audio reading, so it can read any format (even video).
+`audio_degrader` relies on `pysox` for reading, so any format accepted by `pysox` should be ok.
 
 ### Output
-`audio_degrader` output format is always wav stereo `pcm_f32le` (sample rate from original audio file).
+`audio_degrader` output format is always WAV pcm stereo with 32 bits per sample (sample rate from original audio file).
 
-This output wav file can be easily coverted into another format with ffmpeg, e.g.:
+This output wav file can be easily coverted into another format with e.g. ffmpeg:
 ```
 $ ffmpeg -i out.wav -b:a 320k out.mp3
 $ ffmpeg -i out.wav -ac 2 -ar 44100 -acodec pcm_s16le out_formatted.wav
