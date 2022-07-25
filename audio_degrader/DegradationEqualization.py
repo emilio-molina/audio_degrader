@@ -23,6 +23,7 @@ class DegradationEqualization(Degradation):
     def apply(self, audio_file):
         freq = float(self.parameters_values['central_freq'])
         bw = float(self.parameters_values['bandwidth'])
+        q_factor = freq/(bw+1e-16)
         gain = float(self.parameters_values['gain'])
         logging.info("Equalizing. f=%f, bw=%f, gain=%f" % (freq, bw, gain))
         extra_tmp_path = audio_file.tmp_path + '.extra.wav'
@@ -30,7 +31,7 @@ class DegradationEqualization(Degradation):
             audio_file.tmp_path,
             extra_tmp_path,
             freq,
-            bw,
+            q_factor,
             gain)
         logging.info(cmd)
         out, err, returncode = run(cmd)
